@@ -1,4 +1,4 @@
-# This is a sample Python script.
+# Automatic Scene Switcher for atem mini
 
 # Press Maj+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
@@ -8,14 +8,17 @@ import random
 switcher = PyATEMMax.ATEMMax()
 
 # Connect
-print("Connection en cours")
-switcher.connect("192.168.0.123")
+atem_mini_ip = "192.168.0.123"
+
+print("Connecting")
+switcher.connect(atem_mini_ip)
 switcher.waitForConnection()
 print("Connected")
-def camera(n):
+
+def camera(n): #Switches the camera
     return switcher.setProgramInputVideoSource(0, n)
 
-def rotate_camera(list_of_cameras, time_sleep):
+def rotate_camera(list_of_cameras, time_sleep): #Selects camera input at random
     n = random.choice(list_of_cameras)
     camera(n)
     print("Current Camera:  "+str(n))
