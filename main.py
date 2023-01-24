@@ -2,37 +2,67 @@
 Automatic Scene Switcher for Atem Mini
 
 ToDo :
-    read ableton audio levels for smart switching
-    add chat/remote input
-    add on/off and camera number gui
+
+    add  gui
+    regroup both scripts on one start button
 '''
-import socket
+
 import time
 import PyATEMMax
-
 import random
-from multiprocessing import Process, Queue
+
+def piano_status():
+    with open("piano_status.txt", "r") as file:
+        content = file.read()
+        a = float(content)
+    return a
 
 
+def track_status():
+    with open("instrument_status.txt", "r") as file:
+        content = file.read()
+        a = float(content)
+    return a
+
+def connection_to_switcher():
+    switcher = PyATEMMax.ATEMMax()
+
+    # Connect
+    atem_mini_ip = "192.168.0.123"
+
+    print("Connecting to atem mini")
+    print("Remember to launch the other script for automatic switching with sound detection")
+
+    switcher.connect(atem_mini_ip)
+    switcher.waitForConnection()
+    print("Connected to atem mini")
 switcher = PyATEMMax.ATEMMax()
-
-# Connect
-atem_mini_ip = "192.168.0.123"
-
-print("Connecting")
-switcher.connect(atem_mini_ip)
-switcher.waitForConnection()
-print("Connected")
+connection_to_switcher()
 
 def camera(n): #Switches the camera
     return switcher.setProgramInputVideoSource(0, n)
 
-def rotate_camera(list_of_cameras, time_sleep): #Selects camera input at random, time_sleep is how much time it takes to switch cameras
+def rotate_camera(list_of_cameras): #Selects camera input at random, time_sleep is how much time it takes to switch cameras
     n = random.choice(list_of_cameras)
     camera(n)
-    print("Current Camera:  "+str(n))
-    time.sleep(time_sleep)
+    return str(("Current Camera:  "+str(n)))
+
+
 
 while True:
-    rotate_camera([1,2,2,2,2,3], 8)
+    if track_status() > 0.005: #If there's audio in the instruments group, then rotate cameras
+
+        if piano_status() > 0.005:
+            print("Instruments Playing - With Piano - Rotating Cameras 123- " + rotate_camera([1,2,3]))
+        else:
+            print("Instruments Playing - No Piano - Rotating Cameras - 23" + rotate_camera([1,2,3]))
+
+        time.sleep(8)
+
+
+    else:
+        print("Instruments Off - Camera on Face")
+        camera(2)
+
+
 
