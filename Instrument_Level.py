@@ -4,7 +4,6 @@ from pythonosc import udp_client
 import threading
 import time
 import logging
-n = 0
 
 #This script write 0 or 1 in an instrument_status file if the instruments are generating sound
 
@@ -34,14 +33,15 @@ server = osc_server.ThreadingOSCUDPServer(("127.0.0.1", 11001), disp)
 server_thread = threading.Thread(target=server.serve_forever)
 server_thread.start()
 
-while True:
-    # Request the parameters' values of the device, alternate between instruments and piano
-    if n == 0 :
-        client.send_message("/live/device/get/parameters/value", [2, 1])
-        n = 1
 
+n = 0
+while True:
+    # Request the parameters' values of the device, alternate between all instruments and just piano
+    if n == 0 :
+        client.send_message("/live/device/get/parameters/value", [3,2])
+        n = 1
     else:
-        client.send_message("/live/device/get/parameters/value", [3, 2])
+        client.send_message("/live/device/get/parameters/value", [2,1])
         n = 0
 
     time.sleep(0.5)

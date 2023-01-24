@@ -24,11 +24,12 @@ def track_status():
         a = float(content)
     return a
 
+switcher = PyATEMMax.ATEMMax()
+
 def connection_to_switcher():
-    switcher = PyATEMMax.ATEMMax()
 
     # Connect
-    atem_mini_ip = "192.168.0.123"
+    atem_mini_ip = "192.168.0.124"
 
     print("Connecting to atem mini")
     print("Remember to launch the other script for automatic switching with sound detection")
@@ -36,33 +37,34 @@ def connection_to_switcher():
     switcher.connect(atem_mini_ip)
     switcher.waitForConnection()
     print("Connected to atem mini")
-switcher = PyATEMMax.ATEMMax()
+
 connection_to_switcher()
 
-def camera(n): #Switches the camera
+def camera(n,switcher): #Switches the camera
     return switcher.setProgramInputVideoSource(0, n)
 
-def rotate_camera(list_of_cameras): #Selects camera input at random, time_sleep is how much time it takes to switch cameras
+def rotate_camera(list_of_cameras,switcher): #Selects camera input at random, time_sleep is how much time it takes to switch cameras
     n = random.choice(list_of_cameras)
-    camera(n)
+    camera(n,switcher)
     return str(("Current Camera:  "+str(n)))
 
 
-
 while True:
+    sleep_time = 8
     if track_status() > 0.005: #If there's audio in the instruments group, then rotate cameras
 
         if piano_status() > 0.005:
-            print("Instruments Playing - With Piano - Rotating Cameras 123- " + rotate_camera([1,2,3]))
+            print("Instruments Playing - With Piano - Rotating Cameras 123 - " + rotate_camera([1,2,3],switcher))
         else:
-            print("Instruments Playing - No Piano - Rotating Cameras - 23" + rotate_camera([1,2,3]))
+            print("Instruments Playing - No Piano - Rotating Cameras - 23 -" + rotate_camera([2,3],switcher))
 
-        time.sleep(8)
+        time.sleep(sleep_time)
 
 
     else:
         print("Instruments Off - Camera on Face")
-        camera(2)
+        camera(2,switcher)
+        time.sleep(1)
 
 
 
