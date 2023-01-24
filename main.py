@@ -11,6 +11,7 @@ import time
 import PyATEMMax
 
 import random
+from multiprocessing import Process, Queue
 
 
 switcher = PyATEMMax.ATEMMax()
