@@ -6,10 +6,13 @@ ToDo :
     add chat/remote input
     add on/off and camera number gui
 '''
-
+import socket
 import time
 import PyATEMMax
+
 import random
+
+
 switcher = PyATEMMax.ATEMMax()
 
 # Connect
@@ -28,5 +31,7 @@ def rotate_camera(list_of_cameras, time_sleep): #Selects camera input at random,
     camera(n)
     print("Current Camera:  "+str(n))
     time.sleep(time_sleep)
+
 while True:
-    rotate_camera([1,2,3], 2)
+    rotate_camera([1,2,2,2,2,3], 8)
+
