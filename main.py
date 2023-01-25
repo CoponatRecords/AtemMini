@@ -16,10 +16,11 @@ To run this script : right-click, run 'main'
 
 '''
 
-
+from plyer import notification
 import time
 import PyATEMMax
 import random
+from notifypy import Notify
 
 #used to add color in terminal
 CRED_RED = '\033[91m'
@@ -32,6 +33,9 @@ CEND= '\033[0m'
 
 #used as global variable to print less stuff in the terminal
 camera_face = 1
+wide_angle = 2
+zoom = 3
+
 
 #time to wait before trying to switch cameras
 sleep_time = 8
@@ -49,15 +53,19 @@ def connection_to_switcher():
     switcher.waitForConnection()
     print(CRED_RED+"Connected to atem mini"+CEND)
 
+
 def camera(n,switcher): #Switches the camera
     try:
-        switcher.setProgramInputVideoSource(0, n)
+        switcher.setPreviewInputVideoSource(0, n)
+        switcher.execAutoME(0)
+
     except:
         print(CRED_RED+"Error in camera()"+CEND)
 
 def rotate_camera(list_of_cameras,switcher): #Selects camera input at random, time_sleep is how much time it takes to switch cameras
     n = random.choice(list_of_cameras)
     camera(n,switcher)
+
     return str(n)
 
 switcher = PyATEMMax.ATEMMax()
@@ -87,12 +95,12 @@ while True:
     if instrument_group_level() > 0.005: #If there's audio in the instruments group, then rotate cameras
         camera_face = 1
 
-        if piano_level() > 0.005:
+        if piano_level() > 0.0005:
             print(CRED_BLUE_2+' '+CEND+" Instruments Playing - With Piano - Rotating Cameras 123 -"+CRED_GREEN_2+" Current Camera: " +rotate_camera([1,2,3],switcher)+CEND)
 
             for k in range(0, sleep_time):
                 time.sleep(1)
-                if piano_level() < 0.005:
+                if piano_level() < 0.0005:
                     print(CRED_BLUE_2+' '+CEND+CRED_BLUE+" Piano Stopped !"+CEND)
                     break
 
@@ -101,14 +109,15 @@ while True:
 
             for k in range(0, sleep_time):
                 time.sleep(1)
-                if instrument_group_level() < 0.005:
+                if instrument_group_level() < 0.0005:
                     print(CRED_BLUE_2+' '+CEND+CRED_BLUE+" Instruments Off !"+CEND)
                     break
-                elif piano_level() > 0.005:
+                elif piano_level() > 0.0005:
                     print(CRED_BLUE_2+' '+CEND+ CRED_BLUE+" Piano just came in !"+CEND)
                     break
 
     else:
+
         if camera_face == 1:
             print(CRED_ORANGE+' '+CEND+" Instruments Off - Camera on Face - Camera 2")
             camera_face = 0
