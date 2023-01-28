@@ -25,14 +25,18 @@ def volume_handler(*args):
     # print("Volume of track "+str(args[-3])) #found empiricaly
 
     if n == 0:
-        with open("instrument_status.txt", "w") as file:
+        with open("voice_status.txt", "w") as file:
             file.write(str(args[-3]))
-            print('Instru\t- ' + str(float(args[-3])))
+            print('voice_status\t- ' + str(float(args[-3])))
 
     elif n == 1:
         with open("piano_status.txt", "w") as file:
             file.write(str(args[-3]))
             print('Piano\t- ' + str(float(args[-3])))
+    elif n == 2:
+        with open("instrument_status.txt", "w") as file:
+            file.write(str(args[-3]))
+            print('instru\t- ' + str(float(args[-3])))
 
 
 disp.map("/live/device/get/parameters/value", volume_handler)
@@ -48,8 +52,11 @@ while True:
     if n == 0:
         client.send_message("/live/device/get/parameters/value", [3, 2])
         n = 1
-    else:
+    elif n == 1:
         client.send_message("/live/device/get/parameters/value", [2, 1])
+        n = 2
+    elif n == 2:
+        client.send_message("/live/device/get/parameters/value", [1, 1])
         n = 0
 
     time.sleep(0.5)
