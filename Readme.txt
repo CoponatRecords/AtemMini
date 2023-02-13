@@ -12,5 +12,4 @@ This script writes instrument_status.txt, piano_status.txt, drum_status.txt, voi
 
 This works with an envelope follower (Max4Live) linked to a utility's gain on the third (group all instrument) and fourth (piano with a vst) tracks of ableton
 
-
 We used threading to run the processes in parallel.
