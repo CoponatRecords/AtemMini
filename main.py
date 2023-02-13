@@ -1,19 +1,30 @@
 '''
-Automatic Scene Switcher for Atem Mini
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-ToDo :
-    add  gui
-    regroup both scripts on one start button
-'''
+To run this script : right-click on this text, then click:  "Run 'main'"
 
-'''
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 This script reads the instrument_status.txt file and piano_status.txt to switch cameras
-The Atem mini has to be on and connected through ethernet. Check the connection status with the "Atem Setup" app.
-The Instrument_Level script has to be on 
+The ATEM mini has to be on and connected through ethernet. Check the connection status with the "Atem Setup" app.
+The ATEM mini's IP adress has to be set to 192.168.0.124
+
 Ableton needs to have AbletonOSC installed : https://github.com/ideoforms/AbletonOSC
 
-To run this script : right-click, run 'main'
+This script writes instrument_status.txt, piano_status.txt, drum_status.txt, voice_status.txt files with a value repres-
+enting the current audio level of the tracks.
 
+This works with an envelope follower (Max4Live) linked to a utility's gain on the third (group all instrument) and four-
+th (piano with a vst) tracks of ableton
+
+Ableton needs to have AbletonOSC installed : https://github.com/ideoforms/AbletonOSC
+
+We us threading to run the processes in parallel.
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 '''
 from ppadb.client import Client as AdbClient
 from pythonosc import dispatcher, osc_server, udp_client
@@ -24,14 +35,7 @@ import threading
 import time
 
 
-'''
-This script writes in an instrument_status.txt file and piano_status.txt the current audio level of the tracks.
-Works with an envelope follower linked to a utility's gain on the third (group all instrument) and fourth (piano with a 
-vst) tracks of ableton
 
-Ableton needs to have AbletonOSC installed : https://github.com/ideoforms/AbletonOSC
-To run this script : right-click, run 'instrument_level'
-'''
 #used to add color in terminal
 CRED_RED = '\033[91m'
 CRED_GREEN = '\033[42m'
@@ -51,7 +55,10 @@ camera_drums = 4
 #starting cam
 last_cam = 2
 
-#if ronin not connected: put ronin = False
+#Time to wait before trying to switch cameras
+sleep_time = 10
+
+#if ronin not connected: put ronin = False (no gimbal)
 ronin = False
 if not ronin:
     print("No Ronin in the script")
@@ -61,9 +68,6 @@ def current_time():
     '''
     t = time.localtime()
     return str(time.strftime("%H:%M:%S", t)+' ')
-
-#time to wait before trying to switch cameras
-sleep_time = 10
 
 switcher = PyATEMMax.ATEMMax()
 #Functions to communicate with the Atem Mini
@@ -81,7 +85,6 @@ def connection_to_switcher():
     switcher.waitForConnection()
     print(current_time()+CRED_RED+" Connected to atem mini"+CEND)
 connection_to_switcher()
-
 
 ### Android stuff for ronin
 if ronin:

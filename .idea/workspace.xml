@@ -6,11 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="f1baa078-f159-4b28-9d5f-5c8bd8189d33" name="Changes" comment="Atem mini automatic switcher">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Instrument_Level.py" beforeDir="false" afterPath="$PROJECT_DIR$/Instrument_Level.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instrument_status.txt" beforeDir="false" afterPath="$PROJECT_DIR$/instrument_status.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/piano_status.txt" beforeDir="false" afterPath="$PROJECT_DIR$/piano_status.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/run_this.py" beforeDir="false" afterPath="$PROJECT_DIR$/run_this.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,7 +57,7 @@
       <recent name="C:\Users\Coponat Records\PycharmProjects\AtemMini\venv" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.Instrument_Level (1)">
+  <component name="RunManager" selected="Python.main">
     <configuration name="Dji" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="AtemMini" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -238,7 +234,7 @@
       <workItem from="1675974168654" duration="1328000" />
       <workItem from="1676042198546" duration="1671000" />
       <workItem from="1676232795143" duration="2213000" />
-      <workItem from="1676288566541" duration="355000" />
+      <workItem from="1676288566541" duration="1504000" />
     </task>
     <task id="LOCAL-00001" summary="Atem mini automatic switcher">
       <created>1674415260030</created>
@@ -359,7 +355,14 @@
       <option name="project" value="LOCAL" />
       <updated>1674926326269</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="Atem mini automatic switcher">
+      <created>1676289621640</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1676289621640</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -392,7 +395,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/AtemMini$Dji.coverage" NAME="Dji Coverage Results" MODIFIED="1674912414319" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/AtemMini$main.coverage" NAME="main Coverage Results" MODIFIED="1676237534032" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/AtemMini$main.coverage" NAME="main Coverage Results" MODIFIED="1676289546496" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/AtemMini$Piano_Level.coverage" NAME="Piano_Level Coverage Results" MODIFIED="1674525578248" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/AtemMini$main__1_.coverage" NAME="main (1) Coverage Results" MODIFIED="1674523745482" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/venv" />
     <SUITE FILE_PATH="coverage/AtemMini$Detect_Track_level__1_.coverage" NAME="Detect_Track_level (1) Coverage Results" MODIFIED="1674524259314" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
@@ -401,6 +404,6 @@
     <SUITE FILE_PATH="coverage/AtemMini$Track_Level__1_.coverage" NAME="Track_Level (1) Coverage Results" MODIFIED="1674524465274" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/AtemMini$ableton.coverage" NAME="ableton Coverage Results" MODIFIED="1674518536679" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/AtemMini$run_this.coverage" NAME="run_this Coverage Results" MODIFIED="1674524995973" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/AtemMini$Instrument_Level__1_.coverage" NAME="Instrument_Level (1) Coverage Results" MODIFIED="1676288914419" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/AtemMini$Instrument_Level__1_.coverage" NAME="Instrument_Level (1) Coverage Results" MODIFIED="1676288975023" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
