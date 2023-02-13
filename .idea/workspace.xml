@@ -5,12 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f1baa078-f159-4b28-9d5f-5c8bd8189d33" name="Changes" comment="Atem mini automatic switcher">
-      <change afterPath="$PROJECT_DIR$/Dji.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Instrument_Level.py" beforeDir="false" afterPath="$PROJECT_DIR$/Instrument_Level.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/instrument_status.txt" beforeDir="false" afterPath="$PROJECT_DIR$/instrument_status.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/piano_status.txt" beforeDir="false" afterPath="$PROJECT_DIR$/piano_status.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/run_this.py" beforeDir="false" afterPath="$PROJECT_DIR$/run_this.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,14 +36,14 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "C:/Users/Coponat Records/PycharmProjects/AtemMini",
-    "run.code.analysis.last.selected.profile": "aDefault",
-    "settings.editor.selected.configurable": "com.jetbrains.appengine.AppEngineModulesConfigurable"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Coponat Records/PycharmProjects/AtemMini&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;aDefault&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.appengine.AppEngineModulesConfigurable&quot;
   }
-}]]></component>
+}</component>
   <component name="PyConsoleOptionsProvider">
     <option name="myPythonConsoleState">
       <console-settings module-name="AtemMini" is-module-sdk="true">
@@ -61,7 +61,7 @@
       <recent name="C:\Users\Coponat Records\PycharmProjects\AtemMini\venv" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.main">
+  <component name="RunManager" selected="Python.Instrument_Level (1)">
     <configuration name="Dji" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="AtemMini" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -229,7 +229,16 @@
       <workItem from="1674730494309" duration="3287000" />
       <workItem from="1674910379443" duration="468000" />
       <workItem from="1674910857159" duration="441000" />
-      <workItem from="1674911641132" duration="13280000" />
+      <workItem from="1674911641132" duration="14294000" />
+      <workItem from="1675110584557" duration="6255000" />
+      <workItem from="1675254145641" duration="4774000" />
+      <workItem from="1675431628478" duration="5593000" />
+      <workItem from="1675628296873" duration="2279000" />
+      <workItem from="1675798179406" duration="1807000" />
+      <workItem from="1675974168654" duration="1328000" />
+      <workItem from="1676042198546" duration="1671000" />
+      <workItem from="1676232795143" duration="2213000" />
+      <workItem from="1676288566541" duration="355000" />
     </task>
     <task id="LOCAL-00001" summary="Atem mini automatic switcher">
       <created>1674415260030</created>
@@ -343,7 +352,14 @@
       <option name="project" value="LOCAL" />
       <updated>1674910387428</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="Atem mini automatic switcher">
+      <created>1674926326269</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1674926326269</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -376,7 +392,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/AtemMini$Dji.coverage" NAME="Dji Coverage Results" MODIFIED="1674912414319" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/AtemMini$main.coverage" NAME="main Coverage Results" MODIFIED="1674925906548" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/AtemMini$main.coverage" NAME="main Coverage Results" MODIFIED="1676237534032" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/AtemMini$Piano_Level.coverage" NAME="Piano_Level Coverage Results" MODIFIED="1674525578248" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/AtemMini$main__1_.coverage" NAME="main (1) Coverage Results" MODIFIED="1674523745482" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/venv" />
     <SUITE FILE_PATH="coverage/AtemMini$Detect_Track_level__1_.coverage" NAME="Detect_Track_level (1) Coverage Results" MODIFIED="1674524259314" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
@@ -385,6 +401,6 @@
     <SUITE FILE_PATH="coverage/AtemMini$Track_Level__1_.coverage" NAME="Track_Level (1) Coverage Results" MODIFIED="1674524465274" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/AtemMini$ableton.coverage" NAME="ableton Coverage Results" MODIFIED="1674518536679" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/AtemMini$run_this.coverage" NAME="run_this Coverage Results" MODIFIED="1674524995973" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/AtemMini$Instrument_Level__1_.coverage" NAME="Instrument_Level (1) Coverage Results" MODIFIED="1674922918950" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/AtemMini$Instrument_Level__1_.coverage" NAME="Instrument_Level (1) Coverage Results" MODIFIED="1676288914419" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

@@ -16,10 +16,22 @@ To run this script : right-click, run 'main'
 
 '''
 from ppadb.client import Client as AdbClient
-import time
+from pythonosc import dispatcher, osc_server, udp_client
+
 import PyATEMMax
 import random
+import threading
+import time
 
+
+'''
+This script writes in an instrument_status.txt file and piano_status.txt the current audio level of the tracks.
+Works with an envelope follower linked to a utility's gain on the third (group all instrument) and fourth (piano with a 
+vst) tracks of ableton
+
+Ableton needs to have AbletonOSC installed : https://github.com/ideoforms/AbletonOSC
+To run this script : right-click, run 'instrument_level'
+'''
 #used to add color in terminal
 CRED_RED = '\033[91m'
 CRED_GREEN = '\033[42m'
@@ -29,14 +41,17 @@ CRED_GREEN_2 = '\033[92m'
 CRED_ORANGE = '\033[43m'
 CEND= '\033[0m'
 
+#Entrées Atem mini:
 
-# Entrées atem mini :
 zoom = 1
 camera_face = 2
-
 g_angle = 3
+camera_drums = 4
 
-#if ronin not connected : put ronin = False
+#starting cam
+last_cam = 2
+
+#if ronin not connected: put ronin = False
 ronin = False
 if not ronin:
     print("No Ronin in the script")
@@ -47,10 +62,8 @@ def current_time():
     t = time.localtime()
     return str(time.strftime("%H:%M:%S", t)+' ')
 
-
-
 #time to wait before trying to switch cameras
-sleep_time = 8
+sleep_time = 10
 
 switcher = PyATEMMax.ATEMMax()
 #Functions to communicate with the Atem Mini
@@ -69,7 +82,6 @@ def connection_to_switcher():
     print(current_time()+CRED_RED+" Connected to atem mini"+CEND)
 connection_to_switcher()
 
-last_cam = 2
 
 ### Android stuff for ronin
 if ronin:
@@ -109,7 +121,6 @@ def ronin_point(n):
 
     time.sleep(2)
     switcher.setCameraControlAutoFocus(3)
-
 def camera(n,switcher): #Switches the camera
     '''
     :param n: the camera number
@@ -121,7 +132,6 @@ def camera(n,switcher): #Switches the camera
         switcher.execAutoME(0)
     except:
         print(CRED_RED+"Error in camera()"+CEND)
-
 def rotate_camera(list_of_cameras,switcher,position_ronin,last_cam):
 
     '''
@@ -151,10 +161,17 @@ def rotate_camera(list_of_cameras,switcher,position_ronin,last_cam):
         return str(n)+' - Camera Face'
     else:
         return str(n)+ ' Error ?'
-
-
-
-
+def drum_level():
+    '''
+    :return: reads the file drum_status.txt created by Instrument_Level.py
+    '''
+    try:
+        with open("drum_status.txt", "r") as file:
+            content = file.read()
+            return float(content)
+    except:
+        print(current_time()+"Error in drum_level, returning 0")
+        return 0
 def piano_level():
     '''
     :return: reads the file piano_status.txt created by Instrument_Level.py
@@ -189,45 +206,131 @@ def instrument_group_level():
         print(current_time()+CRED_RED+" Error in instrument_group_level, returning 0"+CEND)
         return 0
 
+# OSC client for sending messages to Ableton
+client = udp_client.SimpleUDPClient("127.0.0.1", 11000)
+# Create a dispatcher
+disp = dispatcher.Dispatcher()
 
-while True:
+# Register a function to handle OSC messages on address "/live/device/get/parameters/value"
+def volume_handler(*args):
+    # print("Volume of track "+str(args[-3])) #found empiricaly
 
-    if instrument_group_level() > 0.005: #If there's audio in the instruments group, then rotate cameras
+    if n == 1:
+        with open("voice_status.txt", "w") as file:
+            file.write(str(args[-3]))
+            #print('Voix\t: ' + str(float(args[-3])))
 
-        if piano_level() > 0.0005:
-            camera_package = [zoom,g_angle,camera_face]
-            if voice_level() < 0.05:
-                print('Voice is very low')
-                camera_package = [zoom,zoom,zoom, g_angle,g_angle,g_angle, camera_face]
-            if voice_level() > 0.2:
-                print('Voice is Loud - switching to face camera mostly')
-                camera_package = [camera_face,camera_face,camera_face,camera_face,camera_face,camera_face,camera_face,camera_face,zoom,g_angle]
+    elif n == 3:
+        with open("piano_status.txt", "w") as file:
+            file.write(str(args[-3]))
+            #print('Piano\t: ' + str(float(args[-3])))
+    elif n == 2:
+        with open("instrument_status.txt", "w") as file:
+            file.write(str(args[-3]))
+            #print('instru\t: ' + str(float(args[-3])))
 
-            print(current_time()+CRED_BLUE_2+' '+CEND+" Instruments Playing - With Piano - Rotating Cameras "+str(camera_package)+" -"+CRED_GREEN_2+" Current Camera: " +rotate_camera(camera_package,switcher,[1,2,6],last_cam)+CEND)
+    elif n == 4:
+        with open("drum_status.txt", "w") as file:
+            file.write(str(args[-3]))
+            #print('Drums\t: ' + str(float(args[-3])))
 
-            for k in range(0, sleep_time):
-                time.sleep(1)
-                if piano_level() < 0.0005:
-                    print(current_time()+CRED_BLUE_2+' '+CEND+CRED_BLUE+" Piano Stopped !"+CEND)
-                    break
+disp.map("/live/device/get/parameters/value", volume_handler)
+# Create a OSC server
+server = osc_server.ThreadingOSCUDPServer(("127.0.0.1", 11001), disp)
+# Start the OSC server
+server_thread = threading.Thread(target=server.serve_forever).start()
+
+def main_values():
+    global n
+    n =1
+    while True:
+        # Request the parameters' values of the device, alternate between all instruments and just piano
+        if n == 3:
+            client.send_message("/live/device/get/parameters/value", [3, 2])
+            time.sleep(0.2)
+            n = 2
+
+        elif n == 2:
+            client.send_message("/live/device/get/parameters/value", [2, 1])
+            time.sleep(0.2)
+            n = 1
+        elif n == 1:
+            client.send_message("/live/device/get/parameters/value", [1, 2])
+            time.sleep(0.2)
+            n = 4
+        elif n == 4:
+            client.send_message("/live/device/get/parameters/value", [4, 1])
+            time.sleep(0.2)
+            n = 3
+def camera_brain():
+    while True:
+        time.sleep(0.5)
+        # If there's audio in the instruments group, then rotate cameras
+        if instrument_group_level() > 0.005:
+
+            if piano_level() > 0.0005:
+
+                if voice_level() < 0.001:
+                    print('No Voice')
+                    camera_package = [zoom,zoom, g_angle,g_angle,g_angle, camera_face]
+
+                elif voice_level() < 0.3:
+                    print('Voice is low at '+str(voice_level())[0:5])
+                    camera_package = [zoom,zoom,zoom, g_angle,g_angle,g_angle, camera_face]
+
+                elif voice_level() > 0.6:
+                    print('Voice is Loud at '+str(voice_level())[0:5]+' - switching to face camera mostly')
+                    camera_package = [camera_face,camera_face,camera_face,camera_face,camera_face,camera_face,camera_face,camera_face,zoom,g_angle]
+
+                else:
+                    print('Voice moderate at '+str(voice_level())[0:5]+' - Switching to main mix')
+                    camera_package = [zoom,  g_angle, camera_face]
+
+                if drum_level() > 0.7:
+
+                    print('Drum is loud '+str(drum_level())[0:5]+' - Switching to drum mix')
+                    camera_package = [zoom, g_angle,g_angle, camera_face, camera_drums,camera_drums,camera_drums]
+
+
+                print(current_time()+CRED_BLUE_2+' '+CEND+" Instruments Playing - With Piano - Rotating Cameras "+str(camera_package)+" -"+CRED_GREEN_2+" Current Camera: " +rotate_camera(camera_package,switcher,[1,2,6],last_cam)+CEND)
+
+                for k in range(0, sleep_time):
+                    time.sleep(1)
+                    if piano_level() < 0.0005:
+                        print(current_time()+CRED_BLUE_2+' '+CEND+CRED_BLUE+" Piano Stopped !"+CEND)
+                        break
+
+            else:
+
+                # If there's audio in the instruments group,and no piano
+
+                camera_package = [g_angle]
+
+                if drum_level() > 0.7:
+                    print('Drums are loud ' + str(drum_level())[0:5] + ' - Switching to drum mix')
+                    camera_package = [g_angle,g_angle, camera_face, camera_drums,camera_drums,camera_drums]
+
+
+
+                print(current_time()+CRED_GREEN+' '+CEND+" Instruments Playing - No Piano - Rotating Cameras - "+str(camera_package)+" - "+CRED_GREEN_2+'Current Camera: '+rotate_camera(camera_package,switcher,[2,6],last_cam)+CEND)
+
+                for k in range(0, sleep_time):
+                    time.sleep(1)
+                    if instrument_group_level() < 0.0005:
+                        print(current_time()+CRED_BLUE_2+' '+CEND+CRED_BLUE+" Instruments Off !"+CEND)
+                        break
+                    elif piano_level() > 0.0005:
+                        print(current_time()+CRED_BLUE_2+' '+CEND+ CRED_BLUE+" Piano just came in !"+CEND)
+                        break
 
         else:
-            camera_package = [camera_face,g_angle]
+            # If there's audio in the voice channel only
 
-            print(current_time()+CRED_GREEN+' '+CEND+" Instruments Playing - No Piano - Rotating Cameras - "+str(camera_package)+" - "+CRED_GREEN_2+'Current Camera: '+rotate_camera(camera_package,switcher,[2,6],last_cam)+CEND)
+            camera_package = [camera_face,camera_face,camera_face,camera_face,camera_face,camera_face, camera_face,camera_face, camera_face, camera_face, g_angle]
 
-            for k in range(0, sleep_time):
-                time.sleep(1)
-                if instrument_group_level() < 0.0005:
-                    print(current_time()+CRED_BLUE_2+' '+CEND+CRED_BLUE+" Instruments Off !"+CEND)
-                    break
-                elif piano_level() > 0.0005:
-                    print(current_time()+CRED_BLUE_2+' '+CEND+ CRED_BLUE+" Piano just came in !"+CEND)
-                    break
+            print(current_time()+CRED_ORANGE+' '+CEND+" Instruments Off - Rotating Cameras - "+str(camera_package)+'Current Camera: '+rotate_camera(camera_package,switcher,[2,6],last_cam))
+            time.sleep(3)
 
-    else:
+main_values_thread = threading.Thread(target=main_values).start()
+camera_brain_thread = threading.Thread(target=camera_brain).start()
 
-        print(current_time()+CRED_ORANGE+' '+CEND+" Instruments Off - Camera on Face - Camera 2")
-
-        camera(2,switcher)
-        time.sleep(1)
