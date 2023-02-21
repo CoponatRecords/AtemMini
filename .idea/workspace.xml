@@ -5,13 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f1baa078-f159-4b28-9d5f-5c8bd8189d33" name="Changes" comment="Atem mini automatic switcher">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Dji.py" beforeDir="false" afterPath="$PROJECT_DIR$/Dji.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/drum_status.txt" beforeDir="false" afterPath="$PROJECT_DIR$/drum_status.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instrument_status.txt" beforeDir="false" afterPath="$PROJECT_DIR$/instrument_status.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/piano_status.txt" beforeDir="false" afterPath="$PROJECT_DIR$/piano_status.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/voice_status.txt" beforeDir="false" afterPath="$PROJECT_DIR$/voice_status.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -247,7 +241,7 @@
       <workItem from="1676647091287" duration="2217000" />
       <workItem from="1676837443620" duration="4490000" />
       <workItem from="1676900598778" duration="14765000" />
-      <workItem from="1676999491696" duration="4263000" />
+      <workItem from="1676999491696" duration="4576000" />
     </task>
     <task id="LOCAL-00001" summary="Atem mini automatic switcher">
       <created>1674415260030</created>
@@ -431,7 +425,14 @@
       <option name="project" value="LOCAL" />
       <updated>1676290752878</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="Atem mini automatic switcher">
+      <created>1677003936187</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1677003936187</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

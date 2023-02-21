@@ -19,8 +19,6 @@ enting the current audio level of the tracks.
 This works with an envelope follower (Max4Live) linked to a utility's gain on the third (group all instrument) and four-
 th (piano with a vst) tracks of ableton
 
-Ableton needs to have AbletonOSC installed : https://github.com/ideoforms/AbletonOSC
-
 We us threading to run the processes in parallel.
 
 
@@ -404,7 +402,6 @@ def volume_handler(*args):
                 file.write(str(args[12]))
                 #print('omnisphere\t: ' + str(float(args[12])))
 
-
 disp.map("/live/device/get/parameters/value", volume_handler)
 #disp.map("/live/track/get/output_meter_level", volume_handler)
 
@@ -420,7 +417,7 @@ def main_values():
         # Request the parameters' values of the device, alternate between all instruments and just piano
         if n == 3:
             client.send_message("/live/device/get/parameters/value", [3, 2]) #piano
-            #client.send_message("/live/track/start_listen/output_meter_level", 2) #isntrument group
+            #client.send_message("/live/track/start_listen/output_meter_level", 3)
 
             time.sleep(0.1)
             n = 2
