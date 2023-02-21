@@ -23,6 +23,13 @@ Ableton needs to have AbletonOSC installed : https://github.com/ideoforms/Ableto
 
 We us threading to run the processes in parallel.
 
+
+If using the ronin :
+
+Start the dji app and go  into the 'create' then 'pursuit' tab
+Write .\adb start-server in the terminal window and press enter
+Then launch this script
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 '''
@@ -33,7 +40,8 @@ import PyATEMMax
 import random
 import threading
 import time
-
+import os
+from plyer import notification
 
 
 #used to add color in terminal
@@ -53,7 +61,7 @@ g_angle = 3
 camera_drums = 4
 
 #starting cam
-last_cam = 2
+notification = False
 
 #Time to wait before trying to switch cameras
 sleep_time = 10
@@ -77,10 +85,8 @@ def connection_to_switcher():
     '''
     # Connect
     atem_mini_ip = "192.168.0.124"
-
     print(current_time()+CRED_RED+" Connecting to atem mini"+CEND)
     print("Remember to launch the other script for automatic switching with sound detection")
-
     switcher.connect(atem_mini_ip)
     switcher.waitForConnection()
     print(current_time()+CRED_RED+" Connected to atem mini"+CEND)
@@ -88,43 +94,51 @@ connection_to_switcher()
 
 ### Android stuff for ronin
 if ronin:
+
     client = AdbClient(host="127.0.0.1", port=5037) # Default is "127.0.0.1" and 5037
     devices = client.devices()
 
     if len(devices) == 0:
         print('No devices')
         quit()
-
     device = devices[0]
     print(f'Connected to {device}')
 
 def ronin_point(n):
+
+
+
     if n == 1:
-        #synth_front
-        device.shell('input touchscreen tap 145 840')
+        #piano
+        device.shell('input touchscreen tap 174 949')
     if n == 2:
-        #piano_left
-        device.shell('input touchscreen tap 256 840')
+        #omnisphere
+        device.shell('input touchscreen tap 327 949')
     if n == 3:
-        #synth_right
-        device.shell('input touchscreen tap 385 840')
+        #prophet
+        device.shell('input touchscreen tap 465 949')
     if n == 4 :
-        #battery
-        device.shell('input touchscreen tap 474 840')
+        #vibra
+        device.shell('input touchscreen tap 583 949')
     if n == 5:
         #bass
-        device.shell('input touchscreen tap 592 840')
+        device.shell('input touchscreen tap 737 949')
     if n == 6 :
-        #sarah_speak
-        device.shell('input touchscreen tap 692 840')
-    if n == 7:
-        device.shell('input touchscreen tap 826 840')
-    if n == 8:
-        device.shell('input touchscreen tap 929 840')
+        #batterie
+        device.shell('input touchscreen tap 873 949')
 
-    time.sleep(2)
-    switcher.setCameraControlAutoFocus(3)
+    try:
+        with open("last_ronin.txt", "w") as file:
+            file.write(str(n))
+    except:
+        print("Error in last_ronin.txt")
+        return 0
+
+    switcher.setCameraControlAutoFocus(zoom)
+    time.sleep(2.5)
+
 def camera(n,switcher): #Switches the camera
+
     '''
     :param n: the camera number
     :param switcher: the switcher
@@ -133,9 +147,47 @@ def camera(n,switcher): #Switches the camera
     try:
         switcher.setPreviewInputVideoSource(0, n)
         switcher.execAutoME(0)
+
+        try:
+            with open("last_cam.txt", "r") as file:
+                last_cam = file.read()
+        except:
+            try:
+                with open("last_cam.txt", "w") as file:
+                    file.write(str(n))
+            except:
+                print("Error in reseting last_cam.txt")
+                return 0
+
+        if last_cam != str(n) and (notification == True):
+
+            if n == 1:
+                message = 'Zoom'
+            elif n == 2:
+                message = 'Camera Face'
+            elif n == 3:
+                message = 'Grand Angle'
+            elif n == 4:
+                message = 'Camera Drums'
+
+            notification.notify(
+                title='Camera',
+                message=message,
+                app_icon=None,
+                timeout=1,
+            )
+
+            try:
+                with open("last_cam.txt", "w") as file:
+                    file.write(str(n))
+            except:
+                print("Error in file writing of last_cam")
+                return 0
+
+
     except:
         print(CRED_RED+"Error in camera()"+CEND)
-def rotate_camera(list_of_cameras,switcher,position_ronin,last_cam):
+def rotate_camera(list_of_cameras,switcher):
 
     '''
     :param list_of_cameras: The cameras that will be used for the rotation
@@ -145,25 +197,41 @@ def rotate_camera(list_of_cameras,switcher,position_ronin,last_cam):
 
     n = random.choice(list_of_cameras)
 
-    if n == g_angle:
+    if n == zoom:
         if ronin:
-            c = random.choice(position_ronin)
+            positions_possible, position_list_txt = position_ronin()
+            c = random.choice(positions_possible)
+
             ronin_point(c)
 
     camera(n,switcher)
 
     if n == zoom:
-        return str(n)+' - Zoom'
-    if n == g_angle:
         if ronin:
-            return str(n)+' - Grand angle - variation ronin '+str(c)
+            if c == 1:
+                t = 'Piano'
+            if c == 2:
+                t = 'Omnisphere'
+            if c == 3:
+                t = 'Prophet'
+            if c == 4:
+                t = 'Vibra'
+            if c == 5:
+                t = 'Bass'
+            if c == 6:
+                t = 'Drums'
+            return str(n) + ' - Zoom - ' + t +" - "+ str(position_list_txt)
         else:
-            return str(n)+' - Grand Angle'
+            return str(n) + ' -Zoom'
+
+    if n == g_angle:
+        return str(n)+' - Grand Angle'
 
     if n == camera_face:
         return str(n)+' - Camera Face'
     else:
         return str(n)+ ' Error ?'
+
 def drum_level():
     '''
     :return: reads the file drum_status.txt created by Instrument_Level.py
@@ -174,6 +242,39 @@ def drum_level():
             return float(content)
     except:
         print(current_time()+"Error in drum_level, returning 0")
+        return 0
+def vibra_level():
+    '''
+    :return: reads the file drum_status.txt created by Instrument_Level.py
+    '''
+    try:
+        with open("vibra_status.txt", "r") as file:
+            content = file.read()
+            return float(content)
+    except:
+        print(current_time()+"Error in drum_level, returning 0")
+        return 0
+def prophet_level():
+    '''
+    :return: reads the file prophet_status.txt created by Instrument_Level.py
+    '''
+    try:
+        with open("prophet_status.txt", "r") as file:
+            content = file.read()
+            return float(content)
+    except:
+        print(current_time()+"Error in prophet_level, returning 0")
+        return 0
+def bass_level():
+    '''
+    :return: reads the file drum_status.txt created by Instrument_Level.py
+    '''
+    try:
+        with open("bass_status.txt", "r") as file:
+            content = file.read()
+            return float(content)
+    except:
+        print(current_time()+"Error in bass_level, returning 0")
         return 0
 def piano_level():
     '''
@@ -188,7 +289,7 @@ def piano_level():
         return 0
 def voice_level():
     '''
-    :return: reads the file piano_status.txt created by Instrument_Level.py
+    :return: reads the file voice_status.txt created by Instrument_Level.py
     '''
     try:
         with open("voice_status.txt", "r") as file:
@@ -197,6 +298,58 @@ def voice_level():
     except:
         print(current_time()+"Error in voice_level, returning 0")
         return 0
+def omnisphere_level():
+    '''
+    :return: reads the file omnisphere_status.txt created by Instrument_Level.py
+    '''
+    try:
+        with open("omnisphere_status.txt", "r") as file:
+            content = file.read()
+            return float(content)
+    except:
+        print(current_time()+"Error in omnisphere_level, returning 0")
+        return 0
+
+def position_ronin():
+
+    position_list = []
+    position_list_txt = []
+    if piano_level() > .5:
+        position_list.append(1)
+        position_list_txt.append('piano')
+    if omnisphere_level() > .2:
+        position_list.append(2)
+        position_list_txt.append('omnisphere')
+    if prophet_level() > .5:
+        position_list.append(3)
+        position_list_txt.append('prophet')
+    if vibra_level() > .5:
+        position_list.append(4)
+        position_list_txt.append('vibra')
+    if bass_level() > .5:
+        position_list.append(5)
+        position_list_txt.append('bass')
+    if drum_level() > .5:
+        position_list.append(6)
+        position_list_txt.append('drum')
+
+    if position_list == []:
+        position_list = [1]
+        position_list_txt= ['piano']
+
+
+    return [position_list, position_list_txt]
+
+def percentage(list):
+
+
+    perc_1 = 100*list.count(1)/len(list)
+    perc_2 = 100*list.count(2)/len(list)
+    perc_3 = 100*list.count(3)/len(list)
+    perc_4 = 100*list.count(4)/len(list)
+
+    string = str(perc_1)[0:2]+'% Zoom | '+'%'+str(perc_2)[0:2]+' Face | '+str(perc_3)[0:2]+'% Grand Angle |'+str(perc_4)[0:2]+'% Drums --- '
+    return string
 def instrument_group_level():
     '''
     :return: reads the file instrument_status.txt created by Instrument_Level.py
@@ -205,8 +358,8 @@ def instrument_group_level():
         with open("instrument_status.txt", "r") as file:
             content = file.read()
             return float(content)
-    except:
-        print(current_time()+CRED_RED+" Error in instrument_group_level, returning 0"+CEND)
+    except Exception as e:
+        print(current_time()+CRED_RED+" Error in instrument_group_level, returning 0"+CEND+str(e))
         return 0
 
 # OSC client for sending messages to Ableton
@@ -222,7 +375,6 @@ def volume_handler(*args):
         with open("voice_status.txt", "w") as file:
             file.write(str(args[-3]))
             #print('Voix\t: ' + str(float(args[-3])))
-
     elif n == 3:
         with open("piano_status.txt", "w") as file:
             file.write(str(args[-3]))
@@ -231,13 +383,31 @@ def volume_handler(*args):
         with open("instrument_status.txt", "w") as file:
             file.write(str(args[-3]))
             #print('instru\t: ' + str(float(args[-3])))
-
     elif n == 4:
         with open("drum_status.txt", "w") as file:
             file.write(str(args[-3]))
             #print('Drums\t: ' + str(float(args[-3])))
+    elif n == 5:
+        with open("bass_status.txt", "w") as file:
+            file.write(str(args[-3]))
+            #print('bass\t: ' + str(float(args[-3])))
+    elif n == 6:
+        with open("prophet_status.txt", "w") as file:
+            file.write(str(args[-3]))
+            #print('prophet\t: ' + str(float(args[-3])))
+    elif n == 7:
+        with open("vibra_status.txt", "w") as file:
+            file.write(str(args[-3]))
+            #print('vibra\t: ' + str(float(args[-3])))
+    elif n == 8:
+        with open("omnisphere_status.txt", "w") as file:
+                file.write(str(args[12]))
+                #print('omnisphere\t: ' + str(float(args[12])))
+
 
 disp.map("/live/device/get/parameters/value", volume_handler)
+#disp.map("/live/track/get/output_meter_level", volume_handler)
+
 # Create a OSC server
 server = osc_server.ThreadingOSCUDPServer(("127.0.0.1", 11001), disp)
 # Start the OSC server
@@ -245,26 +415,46 @@ server_thread = threading.Thread(target=server.serve_forever).start()
 
 def main_values():
     global n
-    n =1
+    n = 1
     while True:
         # Request the parameters' values of the device, alternate between all instruments and just piano
         if n == 3:
-            client.send_message("/live/device/get/parameters/value", [3, 2])
-            time.sleep(0.2)
+            client.send_message("/live/device/get/parameters/value", [3, 2]) #piano
+            #client.send_message("/live/track/start_listen/output_meter_level", 2) #isntrument group
+
+            time.sleep(0.1)
             n = 2
 
         elif n == 2:
-            client.send_message("/live/device/get/parameters/value", [2, 1])
-            time.sleep(0.2)
+            client.send_message("/live/device/get/parameters/value", [2, 1]) #isntrument group
+            time.sleep(0.1)
             n = 1
         elif n == 1:
-            client.send_message("/live/device/get/parameters/value", [1, 2])
-            time.sleep(0.2)
+            client.send_message("/live/device/get/parameters/value", [1, 2]) #Voix
+            time.sleep(0.1)
             n = 4
         elif n == 4:
-            client.send_message("/live/device/get/parameters/value", [4, 1])
-            time.sleep(0.2)
+            client.send_message("/live/device/get/parameters/value", [4, 1]) #drum
+            time.sleep(0.1)
+            n = 5
+        elif n == 5:
+            client.send_message("/live/device/get/parameters/value", [14, 2]) #Bass
+            time.sleep(0.1)
+            n = 6
+        elif n == 6:
+            client.send_message("/live/device/get/parameters/value", [15, 2]) #prophet
+            time.sleep(0.1)
+            n = 7
+        elif n == 7:
+            client.send_message("/live/device/get/parameters/value", [16, 2]) #vibra
+            time.sleep(0.1)
+            n = 8
+
+        elif n == 8:
+            client.send_message("/live/device/get/parameters/value", [18, 2]) #omnisphere
+            time.sleep(0.1)
             n = 3
+
 def camera_brain():
     while True:
         time.sleep(0.5)
@@ -294,8 +484,11 @@ def camera_brain():
                     print('Drum is loud '+str(drum_level())[0:5]+' - Switching to drum mix')
                     camera_package = [zoom, g_angle,g_angle, camera_face, camera_drums,camera_drums,camera_drums]
 
+                if ronin:
+                    camera_package.append(zoom)
+                    camera_package.append(zoom)
 
-                print(current_time()+CRED_BLUE_2+' '+CEND+" Instruments Playing - With Piano - Rotating Cameras "+str(camera_package)+" -"+CRED_GREEN_2+" Current Camera: " +rotate_camera(camera_package,switcher,[1,2,6],last_cam)+CEND)
+                print(current_time()+CRED_BLUE_2+' '+CEND+" Instruments Playing - With Piano - "+percentage(camera_package)+" -"+CRED_GREEN_2+" Current Camera: " +rotate_camera(camera_package,switcher)+CEND)
 
                 for k in range(0, sleep_time):
                     time.sleep(1)
@@ -311,11 +504,16 @@ def camera_brain():
 
                 if drum_level() > 0.7:
                     print('Drums are loud ' + str(drum_level())[0:5] + ' - Switching to drum mix')
-                    camera_package = [g_angle,g_angle, camera_face, camera_drums,camera_drums,camera_drums]
+                    camera_package = [g_angle,g_angle, camera_face,camera_drums,camera_drums]
+
+                if ronin:
+                    camera_package.append(zoom)
+                    camera_package.append(zoom)
 
 
 
-                print(current_time()+CRED_GREEN+' '+CEND+" Instruments Playing - No Piano - Rotating Cameras - "+str(camera_package)+" - "+CRED_GREEN_2+'Current Camera: '+rotate_camera(camera_package,switcher,[2,6],last_cam)+CEND)
+
+                print(current_time()+CRED_GREEN+' '+CEND+" Instruments Playing - No Piano - "+percentage(camera_package)+" - "+CRED_GREEN_2+'Current Camera: '+rotate_camera(camera_package,switcher)+CEND)
 
                 for k in range(0, sleep_time):
                     time.sleep(1)
@@ -331,9 +529,8 @@ def camera_brain():
 
             camera_package = [camera_face,camera_face,camera_face,camera_face,camera_face,camera_face, camera_face,camera_face, camera_face, camera_face, g_angle]
 
-            print(current_time()+CRED_ORANGE+' '+CEND+" Instruments Off - Rotating Cameras - "+str(camera_package)+'Current Camera: '+rotate_camera(camera_package,switcher,[2,6],last_cam))
+            print(current_time()+CRED_ORANGE+' '+CEND+" Instruments Off - "+percentage(camera_package)+'Current Camera: '+rotate_camera(camera_package,switcher))
             time.sleep(3)
 
 main_values_thread = threading.Thread(target=main_values).start()
 camera_brain_thread = threading.Thread(target=camera_brain).start()
-

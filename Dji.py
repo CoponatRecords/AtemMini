@@ -1,3 +1,7 @@
+
+
+#just testing stuff here
+
 import time
 from ppadb.client import Client as AdbClient
 
@@ -28,6 +32,5 @@ print(f'Connected to {device}')
 
 device.shell('input touchscreen tap 370 1150')
 time.sleep(1)
-
 
 device.shell('input tap 27')
