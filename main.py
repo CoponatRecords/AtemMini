@@ -13,11 +13,9 @@ The ATEM mini's IP adress has to be set to 192.168.0.124
 
 Ableton needs to have AbletonOSC installed : https://github.com/ideoforms/AbletonOSC
 
-This script writes instrument_status.txt, piano_status.txt, drum_status.txt, voice_status.txt files with a value repres-
+This script writes instrument_status.txt, piano_status.txt.... with a value repres-
 enting the current audio level of the tracks.
 
-This works with an envelope follower (Max4Live) linked to a utility's gain on the third (group all instrument) and four-
-th (piano with a vst) tracks of ableton
 
 We us threading to run the processes in parallel.
 
@@ -61,7 +59,8 @@ camera_drums = 4
 #starting cam
 notification = False
 
-# Ableton Settings
+# Ableton Track Settings
+# The number is the position of the track, starting count at 0 for the first one
 Voix = 1
 Group_instrument = 2
 Piano = 3
@@ -318,7 +317,6 @@ def omnisphere_level():
     except:
         print(current_time()+"Error in omnisphere_level, returning 0")
         return 0
-
 def auto_ronin():
     debug = False
     k = 0
@@ -421,7 +419,6 @@ def auto_ronin():
 
         except Exception as e :
             print(e)
-
 def percentage(list):
 
     perc_1 = 100*list.count(1)/len(list)
@@ -450,9 +447,6 @@ disp = dispatcher.Dispatcher()
 
 # Register a function to handle OSC messages on address "/live/device/get/parameters/value"
 def volume_handler(*args):
-    # print("Volume of track "+str(args[-3])) #found empiricaly
-    #print(args)
-
     n = args[-2]
     if n == Voix:
         with open("voice_status.txt", "w") as file:
@@ -489,7 +483,6 @@ def volume_handler(*args):
     else:
         pass
 
-#disp.map("/live/device/get/parameters/value", volume_handler)
 disp.map("/live/track/get/output_meter_level", volume_handler)
 
 # Create a OSC server
@@ -500,32 +493,17 @@ server_thread = threading.Thread(target=server.serve_forever).start()
 def main_values():
     while True:
         t = 0.1
-            # Request the parameters' values of the device, alternate between all instruments and just piano
-            #client.send_message("/live/device/get/parameters/value", [3, 2]) #piano
+        # Request the audio output value of the tracks
         client.send_message("/live/track/get/output_meter_level",Piano)
-        time.sleep(t)
+        client.send_message("/live/track/get/output_meter_level",Group_instrument)
+        client.send_message("/live/track/get/output_meter_level",Voix)
+        client.send_message("/live/track/get/output_meter_level",Drums)
+        client.send_message("/live/track/get/output_meter_level",Bass)
+        client.send_message("/live/track/get/output_meter_level",Prophet)
+        client.send_message("/live/track/get/output_meter_level",Vibra)
+        client.send_message("/live/track/get/output_meter_level",Omnisphere)
 
-        client.send_message("/live/track/get/output_meter_level",Group_instrument) #instrument group
         time.sleep(t)
-
-        client.send_message("/live/track/get/output_meter_level",Voix) #Voix
-        time.sleep(t)
-
-        client.send_message("/live/track/get/output_meter_level",Drums) #drum
-        time.sleep(t)
-
-        client.send_message("/live/track/get/output_meter_level",Bass)#Bass
-        time.sleep(t)
-
-        client.send_message("/live/track/get/output_meter_level",Prophet) #prophet
-        time.sleep(t)
-
-        client.send_message("/live/track/get/output_meter_level",Vibra) #vibra
-        time.sleep(t)
-
-        client.send_message("/live/track/get/output_meter_level",Omnisphere) #omnisphere
-        time.sleep(t)
-
 def camera_brain():
     while True:
         # If there's audio in the instruments group, then rotate cameras
@@ -605,4 +583,4 @@ camera_brain_thread = threading.Thread(target=camera_brain).start()
 
 if ronin == True:
     ronin_thread = threading.Thread(target=auto_ronin).start()
-    print("ok")
+    print("Ronin bot is on")
