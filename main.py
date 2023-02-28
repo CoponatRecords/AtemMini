@@ -61,6 +61,16 @@ camera_drums = 4
 #starting cam
 notification = False
 
+# Ableton Settings
+Voix = 1
+Group_instrument = 2
+Piano = 3
+Drums = 4
+Bass = 14
+Prophet = 15
+Vibra = 16
+Omnisphere = 18
+
 #Time to wait before trying to switch cameras
 sleep_time = 10
 
@@ -104,26 +114,45 @@ if ronin:
 
 def ronin_point(n):
 
+    try:
+        with open("last_ronin.txt", "r") as file:
+            content = file.read()
 
+    except Exception as e:
+        print('Moving on')
 
-    if n == 1:
+    if str(n) == content:
+        pass
+
+    elif n == 1:
         #piano
         device.shell('input touchscreen tap 174 949')
-    if n == 2:
+        print("Ronin on " + str(n))
+
+    elif n == 2:
         #omnisphere
         device.shell('input touchscreen tap 327 949')
-    if n == 3:
+        print("Ronin on " + str(n))
+
+    elif n == 3:
         #prophet
         device.shell('input touchscreen tap 465 949')
-    if n == 4 :
+        print("Ronin on " + str(n))
+
+    elif n == 4 :
         #vibra
         device.shell('input touchscreen tap 583 949')
-    if n == 5:
+        print("Ronin on " + str(n))
+
+    elif n == 5:
         #bass
         device.shell('input touchscreen tap 737 949')
-    if n == 6 :
+        print("Ronin on " + str(n))
+
+    elif n == 6 :
         #batterie
         device.shell('input touchscreen tap 873 949')
+        print("Ronin on " + str(n))
 
     try:
         with open("last_ronin.txt", "w") as file:
@@ -133,8 +162,10 @@ def ronin_point(n):
         return 0
 
     switcher.setCameraControlAutoFocus(zoom)
-    time.sleep(2.5)
-
+def ronin_startup():
+    for k in range(0,5):
+        ronin_point(k)
+        time.sleep(5)
 def camera(n,switcher): #Switches the camera
 
     '''
@@ -145,6 +176,7 @@ def camera(n,switcher): #Switches the camera
     try:
         switcher.setPreviewInputVideoSource(0, n)
         switcher.execAutoME(0)
+        time.sleep(0.5)
 
         try:
             with open("last_cam.txt", "r") as file:
@@ -182,9 +214,9 @@ def camera(n,switcher): #Switches the camera
                 print("Error in file writing of last_cam")
                 return 0
 
-
     except:
         print(CRED_RED+"Error in camera()"+CEND)
+
 def rotate_camera(list_of_cameras,switcher):
 
     '''
@@ -195,32 +227,11 @@ def rotate_camera(list_of_cameras,switcher):
 
     n = random.choice(list_of_cameras)
 
-    if n == zoom:
-        if ronin:
-            positions_possible, position_list_txt = position_ronin()
-            c = random.choice(positions_possible)
-
-            ronin_point(c)
-
     camera(n,switcher)
 
     if n == zoom:
-        if ronin:
-            if c == 1:
-                t = 'Piano'
-            if c == 2:
-                t = 'Omnisphere'
-            if c == 3:
-                t = 'Prophet'
-            if c == 4:
-                t = 'Vibra'
-            if c == 5:
-                t = 'Bass'
-            if c == 6:
-                t = 'Drums'
-            return str(n) + ' - Zoom - ' + t +" - "+ str(position_list_txt)
-        else:
-            return str(n) + ' -Zoom'
+        return str(n) + ' - Zoom'
+
 
     if n == g_angle:
         return str(n)+' - Grand Angle'
@@ -238,7 +249,7 @@ def drum_level():
         with open("drum_status.txt", "r") as file:
             content = file.read()
             return float(content)
-    except:
+    except Exception:
         print(current_time()+"Error in drum_level, returning 0")
         return 0
 def vibra_level():
@@ -308,38 +319,110 @@ def omnisphere_level():
         print(current_time()+"Error in omnisphere_level, returning 0")
         return 0
 
-def position_ronin():
+def auto_ronin():
+    debug = False
+    k = 0
+    while True:
+        try:
+            with open("last_ronin.txt", "r") as file:
+                content = file.read()
+        except Exception as e:
+            print('Moving on')
 
-    position_list = []
-    position_list_txt = []
-    if piano_level() > .5:
-        position_list.append(1)
-        position_list_txt.append('piano')
-    if omnisphere_level() > .2:
-        position_list.append(2)
-        position_list_txt.append('omnisphere')
-    if prophet_level() > .5:
-        position_list.append(3)
-        position_list_txt.append('prophet')
-    if vibra_level() > .5:
-        position_list.append(4)
-        position_list_txt.append('vibra')
-    if bass_level() > .5:
-        position_list.append(5)
-        position_list_txt.append('bass')
-    if drum_level() > .5:
-        position_list.append(6)
-        position_list_txt.append('drum')
+        time.sleep(8)
 
-    if position_list == []:
-        position_list = [1]
-        position_list_txt= ['piano']
+        position_list = []
+        position_list_txt = []
+
+        if piano_level() > .0002:
+            position_list.append(1)
+            position_list_txt.append('piano')
+            if debug:
+                print('piano')
+        if omnisphere_level() > .02:
+            position_list.append(2)
+            position_list_txt.append('omnisphere')
+            if debug:
+                print('omnisphere')
+        if prophet_level() > .005:
+            position_list.append(3)
+            position_list_txt.append('prophet')
+            if debug:
+                print('prophet')
+        if vibra_level() > .05:
+            position_list.append(4)
+            position_list_txt.append('vibra')
+            if debug:
+                print('vibra')
+        if bass_level() > .05:
+            position_list.append(5)
+            position_list_txt.append('bass')
+            if debug:
+                print('bass')
+        if drum_level() > .05:
+            position_list.append(6)
+            position_list_txt.append('drum_level')
+            if debug:
+                print('drum_level')
+        if voice_level() > .04:
+            position_list.append(6)
+            position_list_txt.append('voice_level')
+            if debug:
+                print('voice_level')
+
+        if voice_level() > .7: #Only Voice
+            position_list = [6]
+            position_list_txt = ['voice_level']
+            if debug:
+                print('voice only')
+
+        position_list = 10*position_list
 
 
-    return [position_list, position_list_txt]
+        try:
+            if 3 in position_list or 4 in position_list:
+                for k in range(len(position_list)):
+                    try:
+                        position_list.remove(6)
+                    except:
+                        pass
+        except:
+            pass
+
+        try:
+
+            if int(content) in position_list:
+                if k < 5:
+                    if debug:
+                        print('k' + str(k))
+                        print('content: ' + str(content))
+                        print('position_list: ' + str(position_list))
+
+                    k = k + 1
+                    time.sleep(1)
+                    pass
+                else:
+                    if debug:
+                        print('k' + str(k))
+                        print('content: ' + str(content))
+                        print('position_list: ' + str(position_list))
+                    k = 0
+                    point = random.choice(range(len(position_list)))
+                    ronin_point(position_list[point])
+
+            else:
+                k = 0
+                if debug:
+                    print('k' + str(k))
+                    print('content: ' + str(content))
+                    print('position_list: ' + str(position_list))
+                point = random.choice(range(len(position_list)))
+                ronin_point(position_list[point])
+
+        except Exception as e :
+            print(e)
 
 def percentage(list):
-
 
     perc_1 = 100*list.count(1)/len(list)
     perc_2 = 100*list.count(2)/len(list)
@@ -368,42 +451,46 @@ disp = dispatcher.Dispatcher()
 # Register a function to handle OSC messages on address "/live/device/get/parameters/value"
 def volume_handler(*args):
     # print("Volume of track "+str(args[-3])) #found empiricaly
+    #print(args)
 
-    if n == 1:
+    n = args[-2]
+    if n == Voix:
         with open("voice_status.txt", "w") as file:
-            file.write(str(args[-3]))
-            #print('Voix\t: ' + str(float(args[-3])))
-    elif n == 3:
-        with open("piano_status.txt", "w") as file:
-            file.write(str(args[-3]))
-            #print('Piano\t: ' + str(float(args[-3])))
-    elif n == 2:
+            file.write(str(args[-1]))
+            #print('Voix\t: ' + str(args))
+    elif n == Group_instrument:
         with open("instrument_status.txt", "w") as file:
-            file.write(str(args[-3]))
-            #print('instru\t: ' + str(float(args[-3])))
-    elif n == 4:
+            file.write(str(args[-1]))
+            #print('instru\t: ' + str(args))
+    elif n == Piano:
+        with open("piano_status.txt", "w") as file:
+            file.write(str(args[-1]))
+            #print('Piano\t: ' + str(args))
+    elif n == Drums:
         with open("drum_status.txt", "w") as file:
-            file.write(str(args[-3]))
-            #print('Drums\t: ' + str(float(args[-3])))
-    elif n == 5:
+            file.write(str(args[-1]))
+            #print('Drums\t: ' + str(args))
+    elif n == Bass:
         with open("bass_status.txt", "w") as file:
-            file.write(str(args[-3]))
-            #print('bass\t: ' + str(float(args[-3])))
-    elif n == 6:
+            file.write(str(args[-1]))
+            # print('bass\t: ' + str(args))
+    elif n == Prophet:
         with open("prophet_status.txt", "w") as file:
-            file.write(str(args[-3]))
-            #print('prophet\t: ' + str(float(args[-3])))
-    elif n == 7:
+            file.write(str(args[-1]))
+            #print('prophet\t: ' + str(args))
+    elif n == Vibra:
         with open("vibra_status.txt", "w") as file:
-            file.write(str(args[-3]))
-            #print('vibra\t: ' + str(float(args[-3])))
-    elif n == 8:
+            file.write(str(args[-1]))
+            #print('vibra\t: ' + str(args))
+    elif n == Omnisphere:
         with open("omnisphere_status.txt", "w") as file:
-                file.write(str(args[12]))
-                #print('omnisphere\t: ' + str(float(args[12])))
+                file.write(str(args[-1]))
+                #print('omnisphere\t: ' + str(args))
+    else:
+        pass
 
-disp.map("/live/device/get/parameters/value", volume_handler)
-#disp.map("/live/track/get/output_meter_level", volume_handler)
+#disp.map("/live/device/get/parameters/value", volume_handler)
+disp.map("/live/track/get/output_meter_level", volume_handler)
 
 # Create a OSC server
 server = osc_server.ThreadingOSCUDPServer(("127.0.0.1", 11001), disp)
@@ -411,50 +498,36 @@ server = osc_server.ThreadingOSCUDPServer(("127.0.0.1", 11001), disp)
 server_thread = threading.Thread(target=server.serve_forever).start()
 
 def main_values():
-    global n
-    n = 1
     while True:
-        # Request the parameters' values of the device, alternate between all instruments and just piano
-        if n == 3:
-            client.send_message("/live/device/get/parameters/value", [3, 2]) #piano
-            #client.send_message("/live/track/start_listen/output_meter_level", 3)
+        t = 0.1
+            # Request the parameters' values of the device, alternate between all instruments and just piano
+            #client.send_message("/live/device/get/parameters/value", [3, 2]) #piano
+        client.send_message("/live/track/get/output_meter_level",Piano)
+        time.sleep(t)
 
-            time.sleep(0.1)
-            n = 2
+        client.send_message("/live/track/get/output_meter_level",Group_instrument) #instrument group
+        time.sleep(t)
 
-        elif n == 2:
-            client.send_message("/live/device/get/parameters/value", [2, 1]) #isntrument group
-            time.sleep(0.1)
-            n = 1
-        elif n == 1:
-            client.send_message("/live/device/get/parameters/value", [1, 2]) #Voix
-            time.sleep(0.1)
-            n = 4
-        elif n == 4:
-            client.send_message("/live/device/get/parameters/value", [4, 1]) #drum
-            time.sleep(0.1)
-            n = 5
-        elif n == 5:
-            client.send_message("/live/device/get/parameters/value", [14, 2]) #Bass
-            time.sleep(0.1)
-            n = 6
-        elif n == 6:
-            client.send_message("/live/device/get/parameters/value", [15, 2]) #prophet
-            time.sleep(0.1)
-            n = 7
-        elif n == 7:
-            client.send_message("/live/device/get/parameters/value", [16, 2]) #vibra
-            time.sleep(0.1)
-            n = 8
+        client.send_message("/live/track/get/output_meter_level",Voix) #Voix
+        time.sleep(t)
 
-        elif n == 8:
-            client.send_message("/live/device/get/parameters/value", [18, 2]) #omnisphere
-            time.sleep(0.1)
-            n = 3
+        client.send_message("/live/track/get/output_meter_level",Drums) #drum
+        time.sleep(t)
+
+        client.send_message("/live/track/get/output_meter_level",Bass)#Bass
+        time.sleep(t)
+
+        client.send_message("/live/track/get/output_meter_level",Prophet) #prophet
+        time.sleep(t)
+
+        client.send_message("/live/track/get/output_meter_level",Vibra) #vibra
+        time.sleep(t)
+
+        client.send_message("/live/track/get/output_meter_level",Omnisphere) #omnisphere
+        time.sleep(t)
 
 def camera_brain():
     while True:
-        time.sleep(0.5)
         # If there's audio in the instruments group, then rotate cameras
         if instrument_group_level() > 0.005:
 
@@ -485,11 +558,11 @@ def camera_brain():
                     camera_package.append(zoom)
                     camera_package.append(zoom)
 
-                print(current_time()+CRED_BLUE_2+' '+CEND+" Instruments Playing - With Piano - "+percentage(camera_package)+" -"+CRED_GREEN_2+" Current Camera: " +rotate_camera(camera_package,switcher)+CEND)
+                print(current_time()+CRED_BLUE_2+' '+CEND+" Instruments Playing - With Piano - "+percentage(camera_package)+" -"+CRED_GREEN_2+" Camera: " +rotate_camera(camera_package,switcher)+CEND)
 
                 for k in range(0, sleep_time):
                     time.sleep(1)
-                    if piano_level() < 0.0005:
+                    if piano_level() < 0.00005:
                         print(current_time()+CRED_BLUE_2+' '+CEND+CRED_BLUE+" Piano Stopped !"+CEND)
                         break
 
@@ -502,15 +575,11 @@ def camera_brain():
                 if drum_level() > 0.7:
                     print('Drums are loud ' + str(drum_level())[0:5] + ' - Switching to drum mix')
                     camera_package = [g_angle,g_angle, camera_face,camera_drums,camera_drums]
-
                 if ronin:
                     camera_package.append(zoom)
                     camera_package.append(zoom)
 
-
-
-
-                print(current_time()+CRED_GREEN+' '+CEND+" Instruments Playing - No Piano - "+percentage(camera_package)+" - "+CRED_GREEN_2+'Current Camera: '+rotate_camera(camera_package,switcher)+CEND)
+                print(current_time()+CRED_GREEN+' '+CEND+" Instruments Playing - No Piano - "+percentage(camera_package)+" - "+CRED_GREEN_2+'Camera: '+rotate_camera(camera_package,switcher)+CEND)
 
                 for k in range(0, sleep_time):
                     time.sleep(1)
@@ -525,9 +594,15 @@ def camera_brain():
             # If there's audio in the voice channel only
 
             camera_package = [camera_face,camera_face,camera_face,camera_face,camera_face,camera_face, camera_face,camera_face, camera_face, camera_face, g_angle]
-
-            print(current_time()+CRED_ORANGE+' '+CEND+" Instruments Off - "+percentage(camera_package)+'Current Camera: '+rotate_camera(camera_package,switcher))
+            if ronin:
+                camera_package.append(zoom)
+                ronin_point(6)
+            print(current_time()+CRED_ORANGE+' '+CEND+" Instruments Off - "+percentage(camera_package)+'Camera: '+rotate_camera(camera_package,switcher))
             time.sleep(3)
 
 main_values_thread = threading.Thread(target=main_values).start()
 camera_brain_thread = threading.Thread(target=camera_brain).start()
+
+if ronin == True:
+    ronin_thread = threading.Thread(target=auto_ronin).start()
+    print("ok")
