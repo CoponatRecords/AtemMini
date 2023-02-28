@@ -5,9 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f1baa078-f159-4b28-9d5f-5c8bd8189d33" name="Changes" comment="Atem mini automatic switcher">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/voice_status.txt" beforeDir="false" afterPath="$PROJECT_DIR$/voice_status.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -249,7 +247,7 @@
       <workItem from="1677434034376" duration="3539000" />
       <workItem from="1677520950402" duration="357000" />
       <workItem from="1677521326129" duration="2508000" />
-      <workItem from="1677582608405" duration="5329000" />
+      <workItem from="1677582608405" duration="5455000" />
     </task>
     <task id="LOCAL-00001" summary="Atem mini automatic switcher">
       <created>1674415260030</created>
@@ -447,7 +445,14 @@
       <option name="project" value="LOCAL" />
       <updated>1677586893859</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="Atem mini automatic switcher">
+      <created>1677588045562</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1677588045562</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

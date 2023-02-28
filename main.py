@@ -490,7 +490,7 @@ server = osc_server.ThreadingOSCUDPServer(("127.0.0.1", 11001), disp)
 # Start the OSC server
 server_thread = threading.Thread(target=server.serve_forever).start()
 
-def main_values():
+def ableton_track_values():
     while True:
         t = 0.1
         # Request the audio output value of the tracks
@@ -578,7 +578,7 @@ def camera_brain():
             print(current_time()+CRED_ORANGE+' '+CEND+" Instruments Off - "+percentage(camera_package)+'Camera: '+rotate_camera(camera_package,switcher))
             time.sleep(3)
 
-main_values_thread = threading.Thread(target=main_values).start()
+main_values_thread = threading.Thread(target=ableton_track_values).start()
 camera_brain_thread = threading.Thread(target=camera_brain).start()
 
 if ronin == True:
