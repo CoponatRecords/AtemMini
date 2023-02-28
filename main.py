@@ -215,7 +215,6 @@ def camera(n,switcher): #Switches the camera
 
     except:
         print(CRED_RED+"Error in camera()"+CEND)
-
 def rotate_camera(list_of_cameras,switcher):
 
     '''
@@ -239,7 +238,6 @@ def rotate_camera(list_of_cameras,switcher):
         return str(n)+' - Camera Face'
     else:
         return str(n)+ ' Error ?'
-
 def drum_level():
     '''
     :return: reads the file drum_status.txt created by Instrument_Level.py
@@ -490,7 +488,7 @@ server = osc_server.ThreadingOSCUDPServer(("127.0.0.1", 11001), disp)
 # Start the OSC server
 server_thread = threading.Thread(target=server.serve_forever).start()
 
-def ableton_track_values():
+def ableton_track_level():
     while True:
         t = 0.1
         # Request the audio output value of the tracks
@@ -578,7 +576,7 @@ def camera_brain():
             print(current_time()+CRED_ORANGE+' '+CEND+" Instruments Off - "+percentage(camera_package)+'Camera: '+rotate_camera(camera_package,switcher))
             time.sleep(3)
 
-main_values_thread = threading.Thread(target=ableton_track_values).start()
+main_values_thread = threading.Thread(target=ableton_track_level).start()
 camera_brain_thread = threading.Thread(target=camera_brain).start()
 
 if ronin == True:
