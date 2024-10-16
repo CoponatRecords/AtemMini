@@ -4,18 +4,24 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f1baa078-f159-4b28-9d5f-5c8bd8189d33" name="Changes" comment="Ableton Atem Mini">
-      <change afterPath="$PROJECT_DIR$/Track_0_status.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Track_1_status.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Track_2_status.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/start_icon.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/stop_icon.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/track_1.txt" afterDir="false" />
+    <list default="true" id="f1baa078-f159-4b28-9d5f-5c8bd8189d33" name="Changes" comment="v2 Ableton Atem Mini">
+      <change afterPath="$PROJECT_DIR$/tkinter-to-customtkinter-converter/main2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Track_0_status.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Track_1_status.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Track_2_status.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bass_status.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/drum_status.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/instrument_status.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/last_ronin.txt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/piano_status.txt" beforeDir="false" afterPath="$PROJECT_DIR$/piano_status.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vibra_status.txt" beforeDir="false" afterPath="$PROJECT_DIR$/vibra_status.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/voice_status.txt" beforeDir="false" afterPath="$PROJECT_DIR$/voice_status.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/omnisphere_status.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/piano_status.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/prophet_status.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/track_1.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vibra_status.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/voice_status.txt" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -65,6 +71,7 @@
       <recent name="C:\Users\Coponat Records\PycharmProjects\AtemMini" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Coponat Records\PycharmProjects\AtemMini\tkinter-to-customtkinter-converter" />
       <recent name="C:\Users\Coponat Records\PycharmProjects\AtemMini" />
       <recent name="C:\Users\Coponat Records\PycharmProjects\AtemMini\platform-tools" />
       <recent name="C:\Users\Coponat Records\PycharmProjects\AtemMini\venv" />
@@ -213,10 +220,10 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.run_this" />
         <item itemvalue="Python.Instrument_Level (1)" />
         <item itemvalue="Python.Dji" />
         <item itemvalue="Python.Piano_Level" />
-        <item itemvalue="Python.run_this" />
         <item itemvalue="Python.Instrument_Level" />
       </list>
     </recent_temporary>
@@ -322,7 +329,62 @@
       <workItem from="1716389142142" duration="14348000" />
       <workItem from="1716454060698" duration="27017000" />
       <workItem from="1716542340784" duration="6334000" />
-      <workItem from="1716574886559" duration="301000" />
+      <workItem from="1716574886559" duration="10135000" />
+      <workItem from="1716628846843" duration="7625000" />
+      <workItem from="1716742466030" duration="3305000" />
+      <workItem from="1716830044803" duration="1962000" />
+      <workItem from="1717002427610" duration="614000" />
+      <workItem from="1717156119115" duration="701000" />
+      <workItem from="1717434132220" duration="1477000" />
+      <workItem from="1717606673989" duration="602000" />
+      <workItem from="1717762737581" duration="2115000" />
+      <workItem from="1717952584984" duration="1319000" />
+      <workItem from="1718212307091" duration="1846000" />
+      <workItem from="1718367681992" duration="1890000" />
+      <workItem from="1718643922275" duration="627000" />
+      <workItem from="1718817072834" duration="916000" />
+      <workItem from="1719162450105" duration="1268000" />
+      <workItem from="1719248429568" duration="2391000" />
+      <workItem from="1719853589783" duration="612000" />
+      <workItem from="1719907241256" duration="1527000" />
+      <workItem from="1720183624649" duration="377000" />
+      <workItem from="1720459005861" duration="997000" />
+      <workItem from="1720461361284" duration="634000" />
+      <workItem from="1720632208552" duration="597000" />
+      <workItem from="1721391488425" duration="1304000" />
+      <workItem from="1721581580477" duration="1198000" />
+      <workItem from="1721668776255" duration="717000" />
+      <workItem from="1721841335524" duration="607000" />
+      <workItem from="1721996204414" duration="450000" />
+      <workItem from="1722187905546" duration="805000" />
+      <workItem from="1722273379083" duration="1205000" />
+      <workItem from="1722445471734" duration="1538000" />
+      <workItem from="1722600441712" duration="776000" />
+      <workItem from="1723396926926" duration="477000" />
+      <workItem from="1724000920061" duration="670000" />
+      <workItem from="1724088975175" duration="1216000" />
+      <workItem from="1724777572149" duration="1510000" />
+      <workItem from="1724865150052" duration="689000" />
+      <workItem from="1725020271867" duration="607000" />
+      <workItem from="1725624637002" duration="1961000" />
+      <workItem from="1725815591000" duration="658000" />
+      <workItem from="1725901553340" duration="699000" />
+      <workItem from="1726074466047" duration="682000" />
+      <workItem from="1726419452876" duration="613000" />
+      <workItem from="1726506278981" duration="262000" />
+      <workItem from="1726506554718" duration="604000" />
+      <workItem from="1726678435181" duration="602000" />
+      <workItem from="1726832274488" duration="604000" />
+      <workItem from="1727283848006" duration="41000" />
+      <workItem from="1727284926245" duration="602000" />
+      <workItem from="1727630804278" duration="1201000" />
+      <workItem from="1727890309231" duration="1212000" />
+      <workItem from="1728043483613" duration="54000" />
+      <workItem from="1728043547325" duration="601000" />
+      <workItem from="1728320747258" duration="604000" />
+      <workItem from="1728648995797" duration="252000" />
+      <workItem from="1728649265234" duration="905000" />
+      <workItem from="1728930489672" duration="1317000" />
     </task>
     <task id="LOCAL-00001" summary="Atem mini automatic switcher">
       <created>1674415260030</created>
@@ -534,7 +596,21 @@
       <option name="project" value="LOCAL" />
       <updated>1677588107856</updated>
     </task>
-    <option name="localTasksCounter" value="31" />
+    <task id="LOCAL-00031" summary="v2 Ableton Atem Mini">
+      <created>1716575390347</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1716575390347</updated>
+    </task>
+    <task id="LOCAL-00032" summary="v2 Ableton Atem Mini">
+      <created>1716575406874</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1716575406875</updated>
+    </task>
+    <option name="localTasksCounter" value="33" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -563,20 +639,32 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Atem mini automatic switcher" />
-    <option name="LAST_COMMIT_MESSAGE" value="Atem mini automatic switcher" />
+    <MESSAGE value="v2 Ableton Atem Mini" />
+    <option name="LAST_COMMIT_MESSAGE" value="v2 Ableton Atem Mini" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/../pythonProject4/venv/Lib/site-packages/live/classes/set.py</url>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/AtemMini$Dji.coverage" NAME="Dji Coverage Results" MODIFIED="1674912414319" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/AtemMini$main.coverage" NAME="main Coverage Results" MODIFIED="1676303730464" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/AtemMini$Piano_Level.coverage" NAME="Piano_Level Coverage Results" MODIFIED="1674525578248" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1716575177609" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/AtemMini$main__1_.coverage" NAME="main (1) Coverage Results" MODIFIED="1674523745482" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/venv" />
-    <SUITE FILE_PATH="coverage/AtemMini$Detect_Track_level__1_.coverage" NAME="Detect_Track_level (1) Coverage Results" MODIFIED="1674524259314" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/main_py$run_this.coverage" NAME="run_this Coverage Results" MODIFIED="1717434181634" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/AtemMini$main_file.coverage" NAME="main_file Coverage Results" MODIFIED="1674523703406" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/AtemMini$main_file__1_.coverage" NAME="main_file (1) Coverage Results" MODIFIED="1674523738009" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/venv" />
     <SUITE FILE_PATH="coverage/AtemMini$Track_Level__1_.coverage" NAME="Track_Level (1) Coverage Results" MODIFIED="1674524465274" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/AtemMini$ableton.coverage" NAME="ableton Coverage Results" MODIFIED="1674518536679" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/AtemMini$run_this.coverage" NAME="run_this Coverage Results" MODIFIED="1674524995973" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/AtemMini$Dji.coverage" NAME="Dji Coverage Results" MODIFIED="1674912414319" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/AtemMini$Piano_Level.coverage" NAME="Piano_Level Coverage Results" MODIFIED="1674525578248" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1728932658087" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/AtemMini$Detect_Track_level__1_.coverage" NAME="Detect_Track_level (1) Coverage Results" MODIFIED="1674524259314" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/AtemMini$main_file__1_.coverage" NAME="main_file (1) Coverage Results" MODIFIED="1674523738009" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/venv" />
     <SUITE FILE_PATH="coverage/AtemMini$Instrument_Level__1_.coverage" NAME="Instrument_Level (1) Coverage Results" MODIFIED="1676288975023" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

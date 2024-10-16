@@ -20,12 +20,6 @@ enting the current audio level of the tracks.
 We us threading to run the processes in parallel.
 
 
-If using the ronin :
-
-Start the dji app and go  into the 'create' then 'pursuit' tab
-Write .\adb start-server in the terminal window and press enter
-Then launch this script
-
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 '''
@@ -43,7 +37,6 @@ import time
 import os
 from plyer import notification
 import numpy as np
-
 
 start = time.time()
 
@@ -268,6 +261,7 @@ def read_checkbox_states(slider_idx):
         return [0, 0, 0, 0]  # Default state if file doesn't exist
 
 def gui():
+    global number_of_tracks
     global root, start_stop_btn, start_icon, pause_icon
     global check_vars, checkbox_states
 
@@ -288,19 +282,28 @@ def gui():
     checkbuttons = []
     sliders = []
     secondary_sliders = []
-    slider_files = ["Track_0_status.txt", "Track_1_status.txt", "Track_2_status.txt", "Track_3_status.txt", "Track_4_status.txt",
-                    "Track_5_status.txt", "Track_6_status.txt", "Track_7_status.txt"]
-    secondary_slider_files = ["Secondary_Track_0_status.txt", "Secondary_Track_1_status.txt", "Secondary_Track_2_status.txt", "Secondary_Track_3_status.txt",
-                              "Secondary_Track_4_status.txt", "Secondary_Track_5_status.txt", "Secondary_Track_6_status.txt", "Secondary_Track_7_status.txt"]
-    slider_names = ["Track 0", "Track 1", "Track 2", "Track 3", "Track 4", "Track 5",
-                    "Track 6", "Track 7"]
+    slider_files = []
+    secondary_slider_files = []
+    slider_names = []
+    slider_box_files = []
+
+    for k in range(number_of_tracks):
+        slider_files.append(f"Track_{k}_status.txt")
+        secondary_slider_files.append(f"Secondary_Track_{k}_status.txt")
+        slider_names.append(f"Track {k}")
+        slider_box_files.append(f"slider_{k}_box.txt")
+
+    for file_path in slider_files + secondary_slider_files + slider_box_files:
+        if not os.path.exists(file_path):
+            with open(file_path, 'w') as file:
+                file.write('0000')  # Creating an empty file
 
     # Initialize checkbox states from files
     checkbox_states = [read_checkbox_states(i) for i in range(len(slider_files))]
     check_vars = [[None] * 4 for _ in range(len(slider_files))]
 
     # Add camera buttons
-    for i, label in enumerate(cam_labels, start=0):
+    for i, label in enumerate(cam_labels):
         btn = ttk.Button(root, text=label)
         btn.grid(row=0, column=i, padx=10, pady=10)
         buttons.append(btn)
@@ -314,7 +317,7 @@ def gui():
         update_camera_button_style(i, buttons, active_cameras)
 
     # Add sliders and secondary sliders in a column under camera buttons
-    for i, (slider_file, secondary_slider_file, slider_name) in enumerate(zip(slider_files, secondary_slider_files, slider_names), start=0):
+    for i, (slider_file, secondary_slider_file, slider_name) in enumerate(zip(slider_files, secondary_slider_files, slider_names)):
         name_label = ttk.Label(root, text=slider_name)
         name_label.grid(row=i * 3 + 3, column=0, padx=10, sticky='w')
 
@@ -351,16 +354,6 @@ def gui():
     update_sliders(sliders, slider_files)
     update_sliders(secondary_sliders, secondary_slider_files)
 
-    text1 = "Pas de mouvement avec le Son ?"
-    text2 = "Ableton - Option - Préférences - Link/Tempo/MIDI - Enlever et remettre AbletonOSC ."
-
-    label = tk.Label(root, text=text1, font=("Helvetica", 8, "italic"))
-    label.grid(row=30, column=0, columnspan=4, sticky="ew")
-    label = tk.Label(root, text=text2, font=("Helvetica", 8, "italic"))
-    label.grid(row=31, column=0, columnspan=4, sticky="ew")
-
-    label = tk.Label(root, text='COPONAT RECORDS 2024', font=("Helvetica", 5, "bold"))
-    label.grid(row=33, column=0, columnspan=4, sticky="ew")
     root.mainloop()
 
 update_input_file('automated.txt',1)
@@ -387,22 +380,11 @@ notification = False
 
 # Ableton Track Settings
 # The number is the position of the track, starting count at 0 for the first one
-Track_0 = 0
-Track_1 = 1
-Track_2 = 2
-Track_3 = 3
-Track_4 = 4
-Track_5 = 5
-Track_6 = 6
-Track_7 = 7
 
 #Time to wait before trying to switch cameras
 sleep_time = 10
 
-#if ronin not connected: put ronin = False (no gimbal)
-ronin = False
-if not ronin:
-    print("No Ronin in the script")
+
 def current_time():
     '''
     :return: time in hh:mm:ss format
@@ -418,23 +400,13 @@ def connection_to_switcher():
     # Connect
     atem_mini_ip = "192.168.0.124"
     print(current_time()+CRED_RED+" Connecting to atem mini"+CEND)
-    print("Remember to launch the other script for automatic switching with sound detection")
     switcher.connect(atem_mini_ip)
     switcher.waitForConnection()
     print(current_time()+CRED_RED+" Connected to atem mini"+CEND)
+
 connection_to_switcher()
 
-### Android stuff for ronin
-if ronin:
 
-    client = AdbClient(host="127.0.0.1", port=5037) # Default is "127.0.0.1" and 5037
-    devices = client.devices()
-
-    if len(devices) == 0:
-        print('No devices')
-        quit()
-    device = devices[0]
-    print(f'Connected to {device}')
 def is_camera_active(camera_number):
     try:
         with open('active_camera.txt', 'r') as file:
@@ -444,61 +416,7 @@ def is_camera_active(camera_number):
         return active_cameras[camera_number - 1] == 1
     except (FileNotFoundError, IndexError, ValueError):
         return False
-def ronin_point(n):
 
-    try:
-        with open("last_ronin.txt", "r") as file:
-            content = file.read()
-
-
-    except Exception as e:
-        print('Moving on')
-
-    if str(n) == content:
-        pass
-
-    elif n == 1:
-        #piano
-        device.shell('input touchscreen tap 174 949')
-        print("Ronin on " + str(n))
-
-    elif n == 2:
-        #Track_6
-        device.shell('input touchscreen tap 327 949')
-        print("Ronin on " + str(n))
-
-    elif n == 3:
-        #Track_4
-        device.shell('input touchscreen tap 465 949')
-        print("Ronin on " + str(n))
-
-    elif n == 4 :
-        #Track_5
-        device.shell('input touchscreen tap 583 949')
-        print("Ronin on " + str(n))
-
-    elif n == 5:
-        #Track_3
-        device.shell('input touchscreen tap 737 949')
-        print("Ronin on " + str(n))
-
-    elif n == 6 :
-        #batterie
-        device.shell('input touchscreen tap 873 949')
-        print("Ronin on " + str(n))
-
-    try:
-        with open("last_ronin.txt", "w") as file:
-            file.write(str(n))
-    except:
-        print("Error in last_ronin.txt")
-        return 0
-
-    switcher.setCameraControlAutoFocus(Camera1)
-def ronin_startup():
-    for k in range(0,5):
-        ronin_point(k)
-        time.sleep(5)
 def camera(n,switcher): #Switches the camera
 
     '''
@@ -579,7 +497,6 @@ def rotate_camera(list_of_cameras,switcher):
     :return: Selects camera input at random, time_sleep is how much time it takes to switch cameras
     '''
 
-    print(list_of_cameras)
     with open('active_camera.txt', 'r') as file:
         active_cameras = [int(line.strip()) for line in file]
     print('active cameras '+ str(active_cameras))
@@ -590,14 +507,22 @@ def rotate_camera(list_of_cameras,switcher):
         if k == 0 :
             while count in list_of_cameras:
                 list_of_cameras.remove(count)
-            print(count)
 
-    print(list_of_cameras)
-    n = random.choice(list_of_cameras)
+    print("list of cameras"+str(list_of_cameras))
+    try:
+        n = random.choice(list_of_cameras)
+        print('Chosen camera is ' + str(n))
 
-    print('Chosen camera is '+str(n))
-    write_digit_to_file(int(n))
-    return int(n)
+        write_digit_to_file(int(n))
+        return int(n)
+
+    except:
+        print("No cameras available - default to  camera 1")
+        return 1
+
+
+
+
 
 
 def Track_level(id):
@@ -615,111 +540,6 @@ def Track_level(id):
         print(current_time()+"Error in track "+str(id)+", returning 0")
         return 0
 
-def Track_7_level():
-    '''
-    :return: reads the file Track_7_status.txt created by Instrument_Level.py
-    '''
-    try:
-        with open("Track_7_status.txt", "r") as file:
-            content = file.read()
-            file.close()
-
-            return float(content)
-    except Exception:
-        print(current_time()+"Error in drum_level, returning 0")
-        return 0
-def Track_5_level():
-    '''
-    :return: reads the file drum_status.txt created by Instrument_Level.py
-    '''
-    try:
-        with open("Track_5_status.txt", "r") as file:
-            content = file.read()
-            file.close()
-
-            return float(content)
-    except:
-        print(current_time()+"Error in Track_5_level, returning 0")
-        return 0
-def Track_4_level():
-    '''
-    :return: reads the file Track_4_status.txt created by Instrument_Level.py
-    '''
-    try:
-        with open("Track_4_status.txt", "r") as file:
-            content = file.read()
-            file.close()
-
-            return float(content)
-    except:
-        print(current_time()+"Error in Track_4_level, returning 0")
-        return 0
-def Track_3_level():
-    '''
-    :return: reads the file drum_status.txt created by Instrument_Level.py
-    '''
-    try:
-        with open("Track_3_status.txt", "r") as file:
-            content = file.read()
-            file.close()
-
-            return float(content)
-    except:
-        print(current_time()+"Error in Track_3_level, returning 0")
-        return 0
-def Track_2_level():
-    '''
-    :return: reads the file track_2.txt created by Instrument_Level.py
-    '''
-    try:
-        with open("Track_2_status.txt", "r") as file:
-            content = file.read()
-            file.close()
-
-            return float(content)
-    except:
-        print(current_time()+"Error in Track_2_level, returning 0")
-        return 0
-def Track_0_level():
-    '''
-    :return: reads the file track_0.txt created by Instrument_Level.py
-    '''
-    try:
-        with open("track_0_status.txt", "r") as file:
-            content = file.read()
-            file.close()
-
-            return float(content)
-    except:
-        print(current_time()+"Error in Track_0_level, returning 0")
-        return 0
-def Track_6_level():
-    '''
-    :return: reads the file Track_6_status.txt created by Instrument_Level.py
-    '''
-    try:
-        with open("Track_6_status.txt", "r") as file:
-            content = file.read()
-            file.close()
-
-            return float(content)
-    except:
-        print(current_time()+"Error in Track_6_level, returning 0")
-        return 0
-def Track_1_level():
-    '''
-    :return: reads the file track_1.txt created by Instrument_Level.py
-    '''
-    try:
-        with open("Track_1_status.txt", "r") as file:
-            content = file.read()
-            file.close()
-
-            return float(content)
-    except Exception as e:
-        print(current_time()+CRED_RED+" Error in Track_1_level(), returning 0"+CEND+str(e))
-        return 0
-
 def percentage(list):
 
     perc_1 = 100*list.count(1)/len(list)
@@ -730,161 +550,69 @@ def percentage(list):
     string = str(perc_1)[0:2]+'% Camera1 | '+'%'+str(perc_2)[0:2]+' Face | '+str(perc_3)[0:2]+'% Grand Angle |'+str(perc_4)[0:2]+'% Drums --- '
     return string
 
-def auto_ronin():
-    debug = False
-    k = 0
-    while True:
-        try:
-            with open("last_ronin.txt", "r") as file:
-                content = file.read()
-        except Exception as e:
-            print('Moving on')
-
-        time.sleep(8)
-
-        position_list = []
-        position_list_txt = []
-
-        if Track_2_level() > .0002:
-            position_list.append(1)
-            position_list_txt.append('Track_2')
-            if debug:
-                print('Track_2')
-        if Track_6_level() > .02:
-            position_list.append(2)
-            position_list_txt.append('Track_6')
-            if debug:
-                print('Track_6')
-        if Track_4_level() > .005:
-            position_list.append(3)
-            position_list_txt.append('Track_4')
-            if debug:
-                print('Track_4')
-        if Track_5_level() > .05:
-            position_list.append(4)
-            position_list_txt.append('Track_5')
-            if debug:
-                print('Track_5')
-        if Track_3_level() > .05:
-            position_list.append(5)
-            position_list_txt.append('Track_3')
-            if debug:
-                print('Track_3')
-        if Track_7_level() > .05:
-            position_list.append(6)
-            position_list_txt.append('Track_7_level')
-            if debug:
-                print('drum_level')
-        if Track_0_level() > .04:
-            position_list.append(6)
-            position_list_txt.append('Track_0_level')
-            if debug:
-                print('Track_0_level')
-
-        if Track_0_level() > .7: #Only Voice
-            position_list = [6]
-            position_list_txt = ['Track_0_level']
-            if debug:
-                print('voice only')
-
-        position_list = 10*position_list
-
-
-        try:
-            if 3 in position_list or 4 in position_list:
-                for k in range(len(position_list)):
-                    try:
-                        position_list.remove(6)
-                    except:
-                        pass
-        except:
-            pass
-
-        try:
-
-            if int(content) in position_list:
-                if k < 5:
-                    if debug:
-                        print('k' + str(k))
-                        print('content: ' + str(content))
-                        print('position_list: ' + str(position_list))
-
-                    k = k + 1
-                    time.sleep(1)
-                    pass
-                else:
-                    if debug:
-                        print('k' + str(k))
-                        print('content: ' + str(content))
-                        print('position_list: ' + str(position_list))
-                    k = 0
-                    point = random.choice(range(len(position_list)))
-                    ronin_point(position_list[point])
-
-            else:
-                k = 0
-                if debug:
-                    print('k' + str(k))
-                    print('content: ' + str(content))
-                    print('position_list: ' + str(position_list))
-                point = random.choice(range(len(position_list)))
-                ronin_point(position_list[point])
-
-        except Exception as e :
-            print(e)
-
 # Register a function to handle OSC messages on address "/live/device/get/parameters/value"
-def volume_handler(*args):
-    n = args[-2]
-
-    with open("Track_"+str(n)+"_status.txt", "w") as file:
-        file.write(str(args[-1]))
-        file.close()
+def osc_handler(*args):
 
 
-# OSC client for sending messages to Ableton
-client = udp_client.SimpleUDPClient("127.0.0.1", 11000)
-# Create a dispatcher
-disp = dispatcher.Dispatcher()
-# Create a OSC server
-server = osc_server.ThreadingOSCUDPServer(("127.0.0.1", 11001), disp)
-# Start the OSC server
-server_thread = threading.Thread(target=server.serve_forever).start()
-disp.map("/live/track/get/output_meter_level", volume_handler)
+    if args[0] == '/live/song/get/num_tracks':
+
+        print('Number of tracks - '+str(args[1]))
+        global number_of_tracks
+        number_of_tracks =  int(args[1])
+
+    elif args[0] == '/live/song/get/track_names':
+
+        print('track_names - '+str(args))
+
+
+    elif args[0] == '/live/track/get/output_meter_level':
+        
+        n = args[-2]
+        with open("Track_"+str(n)+"_status.txt", "w") as file:
+            file.write(str(args[-1]))
+            file.close()
+
+    else:
+        print(args[0])
+
 
 def ableton_track_level():
+    global number_of_tracks
     while True:
         t = 0.1
         # Request the audio output value of the tracks
-        client.send_message("/live/track/get/output_meter_level",Track_0)
-        client.send_message("/live/track/get/output_meter_level",Track_1)
-        client.send_message("/live/track/get/output_meter_level",Track_2)
-        client.send_message("/live/track/get/output_meter_level",Track_3)
-        client.send_message("/live/track/get/output_meter_level",Track_4)
-        client.send_message("/live/track/get/output_meter_level",Track_5)
-        client.send_message("/live/track/get/output_meter_level",Track_6)
-        client.send_message("/live/track/get/output_meter_level",Track_7)
+
+        for k in range(0, number_of_tracks):
+            client.send_message("/live/track/get/output_meter_level",k)
 
 
         time.sleep(t)
 
-def new_camera_brain():
+def camera_brain():
+
+    print("Brain Started")
+    global number_of_tracks
 
     while True:
 
         if read_input_from_file('automated.txt') == True:
 
+            slider_files = []
+            secondary_slider_files = []
+            slider_names = []
+            slider_box_files = []
 
-            slider_files = ["Track_0_status.txt", "Track_1_status.txt", "Track_2_status.txt", "Track_3_status.txt",
-                            "Track_4_status.txt",
-                            "Track_5_status.txt", "Track_6_status.txt", "Track_7_status.txt"]
-            secondary_slider_files = ["Secondary_Track_0_status.txt", "Secondary_Track_1_status.txt",
-                                      "Secondary_Track_2_status.txt", "Secondary_Track_3_status.txt",
-                                      "Secondary_Track_4_status.txt", "Secondary_Track_5_status.txt",
-                                      "Secondary_Track_6_status.txt", "Secondary_Track_7_status.txt"]
-            slider_box_files = ["slider_0_box.txt", "slider_1_box.txt", "slider_2_box.txt", "slider_3_box.txt",
-                            "slider_4_box.txt",
-                            "slider_5_box.txt", "slider_6_box.txt", "slider_7_box.txt"]
+            for k in range(0, number_of_tracks):
+                slider_files.append("Track_" + str(k) + "_status.txt")
+                secondary_slider_files.append("Secondary_Track_" + str(k) + "_status.txt")
+                slider_names.append("Track " + str(k))
+                slider_box_files.append("slider_"+str(k)+"_box.txt")
+
+            for file_path in slider_files + secondary_slider_files + slider_box_files:
+                if not os.path.exists(file_path):
+                    # Create the file if it doesn't exist
+                    with open(file_path, 'w') as file:
+                        file.write('0000')  # Creating an empty file
 
             sound_levels = []  # Initialize a list to store the sound levels
 
@@ -915,7 +643,7 @@ def new_camera_brain():
                             slider_level = float(first_line)
                             slider_levels.append(slider_level)  # Append the slider level to the list
                         break  # Break out of the retry loop if successful
-                    except FileNotFoundError:
+                    except :
                         print(f"File '{file_path}' not found. Retry attempt {attempt}/3.")
                         attempt += 1
                         time.sleep(0.1)  # Wait for 1 second before retrying
@@ -964,11 +692,34 @@ def new_camera_brain():
 
         time.sleep(5)
 
-main_values_thread = threading.Thread(target=ableton_track_level).start()
+
+import live
+import random
+
+global number_of_tracks
+number_of_tracks = 0
+# OSC client for sending messages to Ableton
+client = udp_client.SimpleUDPClient("127.0.0.1", 11000)
+
+# Create a dispatcher
+disp = dispatcher.Dispatcher()
+# Create a OSC server
+server = osc_server.ThreadingOSCUDPServer(("127.0.0.1", 11001), disp)
+
+# Start the OSC server
+server_thread = threading.Thread(target=server.serve_forever).start()
+disp.map("/live/track/get/output_meter_level", osc_handler)
+
+client.send_message("/live/song/get/num_tracks", 99)
+disp.map("/live/song/get/num_tracks", osc_handler)
+
+disp.map("/live/song/get/track_data", osc_handler)
+
+
+
+camera_brain_thread = threading.Thread(target=camera_brain).start()
 gui_thread = threading.Thread(target=gui).start()
-camera_brain_thread = threading.Thread(target=new_camera_brain).start()
+main_values_thread = threading.Thread(target=ableton_track_level()).start()
 
-if ronin == True:
 
-    ronin_thread = threading.Thread(target=auto_ronin).start()
-    print("Ronin bot is on")
+
