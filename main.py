@@ -182,14 +182,9 @@ def camera(n, switcher_instance):
         except FileNotFoundError:
             last_cam = None
 
-        if last_cam != str(n) and enable_notification:
+        if last_cam != str(n) :
             messages = {1: 'Camera 1', 2: 'Camera 2', 3: 'Grand 3', 4: 'Camera 4'}
-            notification.notify(
-                title='Camera AutoSwitch',
-                message=messages.get(n, f'Camera {n}'),
-                app_icon=None,
-                timeout=1,
-            )
+
         try:
             with open("last_cam.txt", "w") as file:
                 file.write(str(n))
