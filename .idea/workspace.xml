@@ -5,23 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f1baa078-f159-4b28-9d5f-5c8bd8189d33" name="Changes" comment="v2 Ableton Atem Mini">
-      <change afterPath="$PROJECT_DIR$/tkinter-to-customtkinter-converter/main2.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Track_0_status.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Track_1_status.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Track_2_status.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/bass_status.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/drum_status.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/instrument_status.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/last_ronin.txt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/omnisphere_status.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/piano_status.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/prophet_status.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/track_1.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vibra_status.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/voice_status.txt" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -385,6 +370,106 @@
       <workItem from="1728648995797" duration="252000" />
       <workItem from="1728649265234" duration="905000" />
       <workItem from="1728930489672" duration="1317000" />
+      <workItem from="1729089129490" duration="267000" />
+      <workItem from="1729100160111" duration="1213000" />
+      <workItem from="1729254420359" duration="604000" />
+      <workItem from="1729515980553" duration="11000" />
+      <workItem from="1729595159053" duration="610000" />
+      <workItem from="1730052388842" duration="607000" />
+      <workItem from="1730138831154" duration="706000" />
+      <workItem from="1730467381642" duration="609000" />
+      <workItem from="1731004270728" duration="446000" />
+      <workItem from="1731071372153" duration="602000" />
+      <workItem from="1731349486355" duration="616000" />
+      <workItem from="1731521449870" duration="1094000" />
+      <workItem from="1731676253440" duration="1024000" />
+      <workItem from="1731678778352" duration="1227000" />
+      <workItem from="1731765665168" duration="1215000" />
+      <workItem from="1731867655736" duration="606000" />
+      <workItem from="1732281618788" duration="779000" />
+      <workItem from="1732471250408" duration="610000" />
+      <workItem from="1732558516080" duration="1964000" />
+      <workItem from="1732731081640" duration="633000" />
+      <workItem from="1732897527000" duration="641000" />
+      <workItem from="1732898654002" duration="960000" />
+      <workItem from="1733162713606" duration="827000" />
+      <workItem from="1733163603657" duration="1144000" />
+      <workItem from="1733336330256" duration="799000" />
+      <workItem from="1733422213618" duration="599000" />
+      <workItem from="1733768368934" duration="800000" />
+      <workItem from="1733829129349" duration="2429000" />
+      <workItem from="1733940943430" duration="1246000" />
+      <workItem from="1734016017830" duration="2215000" />
+      <workItem from="1734371488249" duration="632000" />
+      <workItem from="1734545230946" duration="105000" />
+      <workItem from="1734545348960" duration="615000" />
+      <workItem from="1734707329590" duration="751000" />
+      <workItem from="1734892088109" duration="539000" />
+      <workItem from="1734892639885" duration="1215000" />
+      <workItem from="1734977191014" duration="472000" />
+      <workItem from="1734977675829" duration="100000" />
+      <workItem from="1734977788661" duration="37000" />
+      <workItem from="1734977835230" duration="604000" />
+      <workItem from="1735032347466" duration="615000" />
+      <workItem from="1735151631901" duration="1582000" />
+      <workItem from="1735496051815" duration="1200000" />
+      <workItem from="1735755135800" duration="682000" />
+      <workItem from="1735917762730" duration="674000" />
+      <workItem from="1735918447675" duration="605000" />
+      <workItem from="1736186501757" duration="611000" />
+      <workItem from="1736187464971" duration="682000" />
+      <workItem from="1736359938723" duration="1210000" />
+      <workItem from="1736516183250" duration="1154000" />
+      <workItem from="1741026195271" duration="924000" />
+      <workItem from="1741631712628" duration="2958000" />
+      <workItem from="1741804069906" duration="958000" />
+      <workItem from="1741964990803" duration="59000" />
+      <workItem from="1741965063808" duration="1007000" />
+      <workItem from="1742149977502" duration="1499000" />
+      <workItem from="1742236243390" duration="719000" />
+      <workItem from="1742410829732" duration="885000" />
+      <workItem from="1743272976243" duration="321000" />
+      <workItem from="1743613917482" duration="816000" />
+      <workItem from="1743777145367" duration="1305000" />
+      <workItem from="1744133237795" duration="1030000" />
+      <workItem from="1744218581267" duration="1376000" />
+      <workItem from="1744381818042" duration="1900000" />
+      <workItem from="1744563374495" duration="877000" />
+      <workItem from="1744737136808" duration="633000" />
+      <workItem from="1744823474413" duration="603000" />
+      <workItem from="1744985294278" duration="1343000" />
+      <workItem from="1745169075349" duration="610000" />
+      <workItem from="1745170193314" duration="334000" />
+      <workItem from="1745429681858" duration="606000" />
+      <workItem from="1745514385524" duration="670000" />
+      <workItem from="1745591339876" duration="1207000" />
+      <workItem from="1745862079842" duration="1725000" />
+      <workItem from="1746034186362" duration="493000" />
+      <workItem from="1746551092213" duration="856000" />
+      <workItem from="1746799895555" duration="184000" />
+      <workItem from="1747070499824" duration="369000" />
+      <workItem from="1747154991785" duration="1248000" />
+      <workItem from="1747243409236" duration="1225000" />
+      <workItem from="1747244977192" duration="88000" />
+      <workItem from="1747245073079" duration="1299000" />
+      <workItem from="1747847702104" duration="624000" />
+      <workItem from="1748011267569" duration="603000" />
+      <workItem from="1748194093008" duration="702000" />
+      <workItem from="1748281330831" duration="276000" />
+      <workItem from="1748281614681" duration="628000" />
+      <workItem from="1748460514495" duration="678000" />
+      <workItem from="1748801085205" duration="607000" />
+      <workItem from="1748885440116" duration="703000" />
+      <workItem from="1749234722406" duration="613000" />
+      <workItem from="1749662166038" duration="611000" />
+      <workItem from="1750006605325" duration="792000" />
+      <workItem from="1750610386877" duration="606000" />
+      <workItem from="1750697605319" duration="618000" />
+      <workItem from="1750872013559" duration="399000" />
+      <workItem from="1750872429559" duration="948000" />
+      <workItem from="1751034678895" duration="679000" />
+      <workItem from="1751037724944" duration="11651000" />
+      <workItem from="1751305713578" duration="826000" />
     </task>
     <task id="LOCAL-00001" summary="Atem mini automatic switcher">
       <created>1674415260030</created>
@@ -610,7 +695,14 @@
       <option name="project" value="LOCAL" />
       <updated>1716575406875</updated>
     </task>
-    <option name="localTasksCounter" value="33" />
+    <task id="LOCAL-00033" summary="v2 Ableton Atem Mini">
+      <created>1729089143949</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1729089143949</updated>
+    </task>
+    <option name="localTasksCounter" value="34" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -662,7 +754,7 @@
     <SUITE FILE_PATH="coverage/AtemMini$run_this.coverage" NAME="run_this Coverage Results" MODIFIED="1674524995973" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/AtemMini$Dji.coverage" NAME="Dji Coverage Results" MODIFIED="1674912414319" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/AtemMini$Piano_Level.coverage" NAME="Piano_Level Coverage Results" MODIFIED="1674525578248" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1728932658087" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1751306537674" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/AtemMini$Detect_Track_level__1_.coverage" NAME="Detect_Track_level (1) Coverage Results" MODIFIED="1674524259314" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/AtemMini$main_file__1_.coverage" NAME="main_file (1) Coverage Results" MODIFIED="1674523738009" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/venv" />
     <SUITE FILE_PATH="coverage/AtemMini$Instrument_Level__1_.coverage" NAME="Instrument_Level (1) Coverage Results" MODIFIED="1676288975023" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
