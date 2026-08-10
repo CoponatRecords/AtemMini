@@ -1,13 +1,8 @@
-import platform
-import socket
 import threading
 import time
 import os
 import random
 import signal
-import subprocess
-import re
-from pythonosc import dispatcher, osc_server, udp_client
 import tkinter as tk
 from tkinter import ttk
 from ttkthemes import ThemedTk
@@ -15,6 +10,7 @@ from PIL import Image, ImageTk, ImageDraw
 
 import config
 from state import AppState
+from ableton import AbletonLink
 
 # PyATEMMax is an external dependency, assuming it is installed.
 try:
@@ -34,8 +30,7 @@ except ImportError:
 # Global objects
 state = AppState()
 switcher = PyATEMMax.ATEMMax()
-server = None
-client = None
+ableton = None
 
 root = None
 sliders = []
@@ -93,105 +88,19 @@ def camera(n):
     except Exception as e:
         print(f"Error in camera(): {e}")
 
-# --- OSC Server and Client Setup ---
-def is_port_in_use(port):
-    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
-        try:
-            s.bind(("127.0.0.1", port))
-            return False
-        except OSError:
-            return True
-
-def kill_port_process(port):
-    system = platform.system()
-    try:
-        if system == "Windows":
-            result = subprocess.run(
-                ["netstat", "-aon"], capture_output=True, text=True, shell=True
-            )
-            output = result.stdout
-            pid = None
-            for line in output.splitlines():
-                if f":{port}" in line and "LISTENING" in line:
-                    parts = re.split(r'\s+', line.strip())
-                    pid = parts[-1]
-                    break
-            if pid:
-                print(current_time() + CRED_RED + f" Found process with PID {pid} using port {port}" + CEND)
-                try:
-                    subprocess.run(["taskkill", "/PID", pid, "/F"], capture_output=True, text=True, check=True)
-                    print(current_time() + CRED_RED + f" Killed process with PID {pid}" + CEND)
-                    time.sleep(1)
-                    return True
-                except subprocess.CalledProcessError as e:
-                    print(current_time() + CRED_RED + f" Failed to kill process with PID {pid}: {e}" + CEND)
-                    return False
-            else:
-                print(current_time() + CRED_RED + f" No process found using port {port}" + CEND)
-                return True
-        else:
-            result = subprocess.run(
-                ["lsof", "-i", f":{port}"], capture_output=True, text=True
-            )
-            output = result.stdout.strip()
-            if output:
-                lines = output.splitlines()
-                for line in lines[1:]:
-                    parts = line.split()
-                    pid = parts[1]
-                    print(current_time() + CRED_RED + f" Found process with PID {pid} using port {port}" + CEND)
-                    subprocess.run(["kill", "-9", pid], capture_output=True, text=True)
-                    print(current_time() + CRED_RED + f" Killed process with PID {pid}" + CEND)
-                    time.sleep(1)
-                    return True
-            else:
-                print(current_time() + CRED_RED + f" No process found using port {port}" + CEND)
-                return True
-    except subprocess.CalledProcessError as e:
-        print(current_time() + CRED_RED + f" Error executing command to kill process on port {port}: {e}" + CEND)
-        return False
-    except Exception as e:
-        print(current_time() + CRED_RED + f" Unexpected error while killing process on port {port}: {e}" + CEND)
-        return False
-
 def cleanup(signum=None, frame=None):
-    global server
     print(current_time() + CRED_RED + " Cleaning up resources..." + CEND)
-    if server:
-        try:
-            server.shutdown()
-            server.server_close()
-            print(current_time() + CRED_RED + " OSC server shut down" + CEND)
-        except Exception as e:
-            print(current_time() + CRED_RED + f" Error shutting down OSC server: {e}" + CEND)
+    if ableton:
+        ableton.stop()
     disconnect_switcher()
     os._exit(0)
 
-# --- OSC Callbacks ---
-def osc_handler(*args):
-    if args[0] == '/live/song/get/num_tracks':
-        print(current_time() + 'Number of tracks - ' + str(args[1]))
-        state.set_num_tracks(int(args[1]))
-    elif args[0] == '/live/track/get/output_meter_level':
-        n = int(args[-2])
-        level = float(args[-1])
-        state.set_level(n, level)
-
-        if root and sliders and n < len(sliders):
-            root.after_idle(lambda: sliders[n].set_main(level))
+def on_meter(track, level):
+    """Called by AbletonLink whenever a fresh meter level arrives."""
+    if root and sliders and track < len(sliders):
+        root.after_idle(lambda: sliders[track].set_main(level))
 
 # --- Core Logic Functions ---
-def ableton_track_level():
-    client.send_message("/live/song/get/num_tracks", 0)
-    time.sleep(0.5)
-
-    while True:
-        with state.lock:
-            num_tracks = state.num_tracks
-        for k in range(num_tracks):
-            client.send_message("/live/track/get/output_meter_level", k)
-        time.sleep(config.METER_POLL_INTERVAL)
-
 def camera_brain():
     print(current_time() + "Brain Started")
 
@@ -515,55 +424,19 @@ def gui():
     root.mainloop()
 
 def main():
-    global server, client
+    global ableton
 
     state.load()
 
     connection_to_switcher()
 
-    client = udp_client.SimpleUDPClient(config.OSC_HOST, config.OSC_SEND_PORT)
-
-    disp = dispatcher.Dispatcher()
-    current_server_port = config.OSC_LISTEN_PORT
-    max_attempts = 5
-    for attempt in range(max_attempts):
-        if not is_port_in_use(current_server_port):
-            break
-        print(current_time() + CRED_RED + f" Port {current_server_port} is in use. Attempting to kill the process..." + CEND)
-        if kill_port_process(current_server_port):
-            if not is_port_in_use(current_server_port):
-                print(current_time() + CRED_RED + f" Port {current_server_port} successfully freed." + CEND)
-                break
-        print(current_time() + CRED_RED + f" Failed to free port {current_server_port}. Trying next port..." + CEND)
-        current_server_port += 1
-        if attempt == max_attempts - 1:
-            print(current_time() + CRED_RED + f" All port attempts failed. Exiting." + CEND)
-            cleanup()
-            return
-
-    try:
-        print(current_time() + CRED_RED + f" Starting OSC server on port {current_server_port}" + CEND)
-        server = osc_server.ThreadingOSCUDPServer(("127.0.0.1", current_server_port), disp)
-        print(current_time() + CRED_RED + f" OSC server started on port {current_server_port}" + CEND)
-    except OSError as e:
-        print(current_time() + CRED_RED + f" Failed to start OSC server on port {current_server_port}: {e}" + CEND)
-        cleanup()
-        return
-
-    disp.map("/live/track/get/output_meter_level", osc_handler)
-    disp.map("/live/song/get/num_tracks", osc_handler)
-
-    server_thread = threading.Thread(target=server.serve_forever, daemon=True)
-    server_thread.start()
-
-    main_values_thread = threading.Thread(target=ableton_track_level, daemon=True)
-    main_values_thread.start()
+    ableton = AbletonLink(state, on_meter=on_meter)
+    ableton.start()
 
     camera_brain_thread = threading.Thread(target=camera_brain, daemon=True)
     camera_brain_thread.start()
 
-    print(f"{current_time()} Requesting initial number of tracks from Ableton...")
-    client.send_message("/live/song/get/num_tracks", 0)
+    print(f"{current_time()} Waiting for Ableton to report its tracks...")
     time.sleep(1)
 
     gui()
