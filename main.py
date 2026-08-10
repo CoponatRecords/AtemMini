@@ -9,6 +9,8 @@ import signal
 import subprocess
 import re
 from pythonosc import dispatcher, osc_server, udp_client
+
+import config
 import tkinter as tk
 from tkinter import ttk
 from ttkthemes import ThemedTk
@@ -75,7 +77,7 @@ Camera3 = 3
 Camera4 = 4
 
 # Settings
-sleep_time = 10
+sleep_time = config.DECISION_INTERVAL
 
 # --- Helper Functions ---
 def write_digit_to_file(digit, filename='input.txt'):
@@ -150,7 +152,7 @@ def read_checkbox_states(slider_idx):
 # --- ATEM Mini Control (using PyATEMMax) ---
 def connection_to_switcher():
     global switcher
-    atem_mini_ip = "192.168.0.240"
+    atem_mini_ip = config.ATEM_IP
     print(current_time() + CRED_RED + " Connecting to ATEM Mini..." + CEND)
     try:
         switcher.connect(atem_mini_ip)
@@ -727,10 +729,10 @@ def main():
 
     connection_to_switcher()
 
-    osc_client_port = 11000
-    osc_server_base_port = 11001
+    osc_client_port = config.OSC_SEND_PORT
+    osc_server_base_port = config.OSC_LISTEN_PORT
 
-    client = udp_client.SimpleUDPClient("127.0.0.1", osc_client_port)
+    client = udp_client.SimpleUDPClient(config.OSC_HOST, osc_client_port)
 
     disp = dispatcher.Dispatcher()
     current_server_port = osc_server_base_port
