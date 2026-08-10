@@ -11,25 +11,11 @@ from PIL import Image, ImageTk, ImageDraw
 import config
 from state import AppState
 from ableton import AbletonLink
-
-# PyATEMMax is an external dependency, assuming it is installed.
-try:
-    import PyATEMMax
-except ImportError:
-    print("PyATEMMax not found. Running in dummy switcher mode.")
-    class PyATEMMax: # Dummy class if not installed
-        class ATEMMax:
-            def __init__(self): pass
-            def connect(self, ip): print(f"Dummy ATEM connecting to {ip}")
-            def waitForConnection(self): time.sleep(0.1)
-            def disconnect(self): print("Dummy ATEM disconnected")
-            def setPreviewInputVideoSource(self, program, source): pass
-            def execAutoME(self, mix_effect_block): pass
-    PyATEMMax = PyATEMMax
+from atem import Switcher
 
 # Global objects
 state = AppState()
-switcher = PyATEMMax.ATEMMax()
+switcher = None
 ableton = None
 
 root = None
@@ -61,38 +47,12 @@ def resize_image(image_path, width, height):
         return ImageTk.PhotoImage(img)
 
 
-# --- ATEM Mini Control (using PyATEMMax) ---
-def connection_to_switcher():
-    print(current_time() + CRED_RED + " Connecting to ATEM Mini..." + CEND)
-    try:
-        switcher.connect(config.ATEM_IP)
-        switcher.waitForConnection()
-        print(current_time() + CRED_RED + " Connected to ATEM Mini" + CEND)
-    except Exception as e:
-        print(current_time() + CRED_RED + f" Failed to connect to ATEM Mini: {e}" + CEND)
-
-def disconnect_switcher():
-    try:
-        switcher.disconnect()
-        print(current_time() + CRED_RED + " Disconnected from ATEM Mini" + CEND)
-    except Exception as e:
-        print(current_time() + CRED_RED + f" Error disconnecting from ATEM Mini: {e}" + CEND)
-
-def camera(n):
-    """Cut to camera n: put it on preview, then run the Auto transition."""
-    try:
-        switcher.setPreviewInputVideoSource(0, n)
-        switcher.execAutoME(0)
-        print(f"Camera {n} selected")
-        state.record_switch(n)
-    except Exception as e:
-        print(f"Error in camera(): {e}")
-
 def cleanup(signum=None, frame=None):
     print(current_time() + CRED_RED + " Cleaning up resources..." + CEND)
     if ableton:
         ableton.stop()
-    disconnect_switcher()
+    if switcher:
+        switcher.stop()
     os._exit(0)
 
 def on_meter(track, level):
@@ -131,7 +91,7 @@ def camera_brain():
 
             if filtered_cam_list:
                 print(f'{current_time()} Camera mix candidates: {filtered_cam_list}')
-                camera(random.choice(filtered_cam_list))
+                switcher.cut_to(random.choice(filtered_cam_list))
             else:
                 print(f'{current_time()} AutoSwitch is not changing any cameras at the moment (no sound above threshold or no active cameras chosen for tracks).')
         time.sleep(config.DECISION_INTERVAL)
@@ -270,7 +230,7 @@ def toggle_camera(idx, buttons):
 def update_camera_button_style(idx, buttons):
     if state.is_camera_active(idx + 1):
         buttons[idx].configure(state=tk.NORMAL, style='Camera.TButton')
-        buttons[idx].config(command=lambda idx=idx: camera(idx + 1))
+        buttons[idx].config(command=lambda idx=idx: switcher.cut_to(idx + 1))
     else:
         buttons[idx].configure(state=tk.DISABLED, style='Disabled.TButton')
         buttons[idx].config(command=None)
@@ -424,11 +384,12 @@ def gui():
     root.mainloop()
 
 def main():
-    global ableton
+    global ableton, switcher
 
     state.load()
 
-    connection_to_switcher()
+    switcher = Switcher(state)
+    switcher.start()
 
     ableton = AbletonLink(state, on_meter=on_meter)
     ableton.start()
