@@ -1,7 +1,6 @@
 import threading
 import time
 import os
-import random
 import signal
 import tkinter as tk
 from tkinter import ttk
@@ -12,6 +11,7 @@ import config
 from state import AppState
 from ableton import AbletonLink
 from atem import Switcher
+import brain
 
 # Global objects
 state = AppState()
@@ -59,42 +59,6 @@ def on_meter(track, level):
     """Called by AbletonLink whenever a fresh meter level arrives."""
     if root and sliders and track < len(sliders):
         root.after_idle(lambda: sliders[track].set_main(level))
-
-# --- Core Logic Functions ---
-def camera_brain():
-    print(current_time() + "Brain Started")
-
-    while True:
-        if state.is_automated():
-            with state.lock:
-                num_tracks = state.num_tracks
-
-            # Every track that is currently louder than its threshold
-            # "votes" for the cameras it is mapped to.
-            camera_votes = [0] * config.NUM_CAMERAS
-            for k in range(num_tracks):
-                with state.lock:
-                    sound = state.levels.get(k, 0.0)
-                if state.get_threshold(k) < sound:
-                    boxes = state.get_track_cameras(k)
-                    for cam_idx in range(config.NUM_CAMERAS):
-                        if boxes[cam_idx] == 1:
-                            camera_votes[cam_idx] += 1
-
-            # More votes -> more entries in the list -> higher chance.
-            cam_list = []
-            for i, votes in enumerate(camera_votes):
-                cam_list.extend([i + 1] * votes)
-
-            filtered_cam_list = [cam for cam in cam_list
-                                 if state.is_camera_active(cam)]
-
-            if filtered_cam_list:
-                print(f'{current_time()} Camera mix candidates: {filtered_cam_list}')
-                switcher.cut_to(random.choice(filtered_cam_list))
-            else:
-                print(f'{current_time()} AutoSwitch is not changing any cameras at the moment (no sound above threshold or no active cameras chosen for tracks).')
-        time.sleep(config.DECISION_INTERVAL)
 
 # --- GUI Components and Logic ---
 class CustomDualSlider:
@@ -394,8 +358,9 @@ def main():
     ableton = AbletonLink(state, on_meter=on_meter)
     ableton.start()
 
-    camera_brain_thread = threading.Thread(target=camera_brain, daemon=True)
-    camera_brain_thread.start()
+    stop_brain = threading.Event()
+    threading.Thread(target=brain.run, args=(state, switcher, stop_brain),
+                     daemon=True, name="brain").start()
 
     print(f"{current_time()} Waiting for Ableton to report its tracks...")
     time.sleep(1)
