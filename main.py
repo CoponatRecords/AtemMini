@@ -1,4 +1,3 @@
-import asyncio
 import platform
 import socket
 import threading
@@ -9,14 +8,15 @@ import signal
 import subprocess
 import re
 from pythonosc import dispatcher, osc_server, udp_client
-
-import config
 import tkinter as tk
 from tkinter import ttk
 from ttkthemes import ThemedTk
 from PIL import Image, ImageTk, ImageDraw
 
-# PyATEMMax and plyer are external dependencies, assuming they are installed.
+import config
+from state import AppState
+
+# PyATEMMax is an external dependency, assuming it is installed.
 try:
     import PyATEMMax
 except ImportError:
@@ -31,83 +31,24 @@ except ImportError:
             def execAutoME(self, mix_effect_block): pass
     PyATEMMax = PyATEMMax
 
-try:
-    from plyer import notification
-except ImportError:
-    print("Plyer not found. Notifications will be disabled.")
-    class NotificationDummy:
-        def notify(self, **kwargs): pass
-    notification = NotificationDummy()
-    enable_notification = False
-
-# Global variables
-start = time.time()
-number_of_tracks = 0
+# Global objects
+state = AppState()
 switcher = PyATEMMax.ATEMMax()
 server = None
-
-current_sound_levels = {}
-current_threshold_levels = {}
-current_checkbox_states = {}
-data_lock = threading.Lock()
+client = None
 
 root = None
 sliders = []
-secondary_sliders = []
 start_stop_btn = None
 start_icon = None
 pause_icon = None
-check_vars = []
-checkbox_states = []
-
 
 # ANSI color codes for terminal (for console output, not GUI)
 CRED_RED = '\033[91m'
-CRED_GREEN = '\033[42m'
-CRED_BLUE = '\033[34m'
-CRED_BLUE_2 = '\033[44m'
-CRED_GREEN_2 = '\033[92m'
-CRED_ORANGE = '\033[43m'
 CEND = '\033[0m'
 
-# ATEM Mini camera inputs
-Camera1 = 1
-Camera2 = 2
-Camera3 = 3
-Camera4 = 4
-
-# Settings
-sleep_time = config.DECISION_INTERVAL
 
 # --- Helper Functions ---
-def write_digit_to_file(digit, filename='input.txt'):
-    if digit not in [1, 2, 3, 4]:
-        raise ValueError("Input must be one of the following digits: 1, 2, 3, or 4")
-    with open(filename, 'w') as file:
-        file.write(str(digit))
-
-def update_input_file(filename, value):
-    try:
-        with open(filename, 'w') as file:
-            file.write(str(value))
-    except Exception as e:
-        print(f"Error updating input file '{filename}': {e}")
-
-def read_input_from_file(filename):
-    try:
-        with open(filename, 'r') as file:
-            return float(file.read().strip())
-    except (FileNotFoundError, ValueError):
-        return None
-
-def read_value_from_file(filename):
-    try:
-        with open(filename, 'r') as file:
-            value = float(file.read().strip())
-            return value
-    except (FileNotFoundError, ValueError):
-        return 0.5
-
 def current_time():
     t = time.localtime()
     return str(time.strftime("%H:%M:%S", t) + ' ')
@@ -125,73 +66,30 @@ def resize_image(image_path, width, height):
         return ImageTk.PhotoImage(img)
 
 
-def save_active_cameras(active_cameras):
-    with open('active_camera.txt', 'w') as f:
-        for state in active_cameras:
-            f.write(f"{state}\n")
-
-def load_active_cameras():
-    try:
-        with open('active_camera.txt', 'r') as f:
-            return [int(line.strip()) for line in f]
-    except FileNotFoundError:
-        return [1, 1, 1, 1]
-
-def read_checkbox_states(slider_idx):
-    file_path = f"slider_{slider_idx}_box.txt"
-    if os.path.exists(file_path):
-        with open(file_path, 'r') as file:
-            state_str = file.read().strip()
-            state_str = state_str.ljust(4, '0')
-            return [int(char) for char in state_str[:4]]
-    else:
-        with open(file_path, 'w') as file:
-            file.write('0000')
-        return [0, 0, 0, 0]
-
 # --- ATEM Mini Control (using PyATEMMax) ---
 def connection_to_switcher():
-    global switcher
-    atem_mini_ip = config.ATEM_IP
     print(current_time() + CRED_RED + " Connecting to ATEM Mini..." + CEND)
     try:
-        switcher.connect(atem_mini_ip)
+        switcher.connect(config.ATEM_IP)
         switcher.waitForConnection()
         print(current_time() + CRED_RED + " Connected to ATEM Mini" + CEND)
     except Exception as e:
         print(current_time() + CRED_RED + f" Failed to connect to ATEM Mini: {e}" + CEND)
-        switcher = PyATEMMax.ATEMMax("Dummy_Switcher")
 
 def disconnect_switcher():
-    global switcher
-    if isinstance(switcher, PyATEMMax.ATEMMax):
-        try:
-            switcher.disconnect()
-            print(current_time() + CRED_RED + " Disconnected from ATEM Mini" + CEND)
-        except Exception as e:
-            print(current_time() + CRED_RED + f" Error disconnecting from ATEM Mini: {e}" + CEND)
-
-def camera(n, switcher_instance):
     try:
-        switcher_instance.setPreviewInputVideoSource(0, n)
-        switcher_instance.execAutoME(0)
+        switcher.disconnect()
+        print(current_time() + CRED_RED + " Disconnected from ATEM Mini" + CEND)
+    except Exception as e:
+        print(current_time() + CRED_RED + f" Error disconnecting from ATEM Mini: {e}" + CEND)
+
+def camera(n):
+    """Cut to camera n: put it on preview, then run the Auto transition."""
+    try:
+        switcher.setPreviewInputVideoSource(0, n)
+        switcher.execAutoME(0)
         print(f"Camera {n} selected")
-        update_input_file('input.txt', n)
-
-        try:
-            with open("last_cam.txt", "r") as file:
-                last_cam = file.read().strip()
-        except FileNotFoundError:
-            last_cam = None
-
-        if last_cam != str(n) :
-            messages = {1: 'Camera 1', 2: 'Camera 2', 3: 'Grand 3', 4: 'Camera 4'}
-
-        try:
-            with open("last_cam.txt", "w") as file:
-                file.write(str(n))
-        except Exception as e:
-            print(f"Error in file writing of last_cam: {e}")
+        state.record_switch(n)
     except Exception as e:
         print(f"Error in camera(): {e}")
 
@@ -271,86 +169,63 @@ def cleanup(signum=None, frame=None):
 
 # --- OSC Callbacks ---
 def osc_handler(*args):
-    global number_of_tracks, sliders, root
     if args[0] == '/live/song/get/num_tracks':
         print(current_time() + 'Number of tracks - ' + str(args[1]))
-        number_of_tracks = int(args[1])
+        state.set_num_tracks(int(args[1]))
     elif args[0] == '/live/track/get/output_meter_level':
         n = int(args[-2])
         level = float(args[-1])
-        with data_lock:
-            current_sound_levels[n] = level
+        state.set_level(n, level)
 
         if root and sliders and n < len(sliders):
             root.after_idle(lambda: sliders[n].set_main(level))
 
 # --- Core Logic Functions ---
 def ableton_track_level():
-    global number_of_tracks, client
     client.send_message("/live/song/get/num_tracks", 0)
     time.sleep(0.5)
 
     while True:
-        if number_of_tracks > 0:
-            for k in range(number_of_tracks):
-                client.send_message("/live/track/get/output_meter_level", k)
-        time.sleep(0.1)
-
-def rotate_camera(list_of_cameras):
-    try:
-        n = random.choice(list_of_cameras)
-        print(f'{current_time()} Chosen camera is {n}')
-        write_digit_to_file(int(n))
-        return int(n)
-    except IndexError:
-        print(f"{current_time()} No cameras available in the filtered list - defaulting to camera 2")
-        return 2
-    except Exception as e:
-        print(f"{current_time()} Error in rotate_camera: {e}")
-        return 2
+        with state.lock:
+            num_tracks = state.num_tracks
+        for k in range(num_tracks):
+            client.send_message("/live/track/get/output_meter_level", k)
+        time.sleep(config.METER_POLL_INTERVAL)
 
 def camera_brain():
     print(current_time() + "Brain Started")
-    global number_of_tracks, current_sound_levels, current_threshold_levels, current_checkbox_states, switcher
 
     while True:
-        if read_input_from_file('automated.txt') == 1:
-            with data_lock:
-                sound_levels = [current_sound_levels.get(k, 0.0) for k in range(number_of_tracks)]
-                threshold_levels = [current_threshold_levels.get(k, 0.5) for k in range(number_of_tracks)]
-                checkbox_states_copy = [current_checkbox_states.get(k, [0, 0, 0, 0]) for k in range(number_of_tracks)]
+        if state.is_automated():
+            with state.lock:
+                num_tracks = state.num_tracks
 
-            camera_mix_counts = [0, 0, 0, 0]
+            # Every track that is currently louder than its threshold
+            # "votes" for the cameras it is mapped to.
+            camera_votes = [0] * config.NUM_CAMERAS
+            for k in range(num_tracks):
+                with state.lock:
+                    sound = state.levels.get(k, 0.0)
+                if state.get_threshold(k) < sound:
+                    boxes = state.get_track_cameras(k)
+                    for cam_idx in range(config.NUM_CAMERAS):
+                        if boxes[cam_idx] == 1:
+                            camera_votes[cam_idx] += 1
 
-            for k in range(len(sound_levels)):
-                sound = sound_levels[k]
-                threshold = threshold_levels[k]
-                box_values = checkbox_states_copy[k]
-
-                if threshold < sound:
-                    for cam_idx in range(4):
-                        if box_values[cam_idx] == 1:
-                            camera_mix_counts[cam_idx] += 1
-
+            # More votes -> more entries in the list -> higher chance.
             cam_list = []
-            for i in range(len(camera_mix_counts)):
-                for _ in range(camera_mix_counts[i]):
-                    cam_list.append(i + 1)
+            for i, votes in enumerate(camera_votes):
+                cam_list.extend([i + 1] * votes)
 
-            try:
-                with open('active_camera.txt', 'r') as file:
-                    gui_active_cameras = [int(line.strip()) for line in file]
-            except FileNotFoundError:
-                gui_active_cameras = [1, 1, 1, 1]
+            filtered_cam_list = [cam for cam in cam_list
+                                 if state.is_camera_active(cam)]
 
-            filtered_cam_list = [cam for cam in cam_list if cam-1 < len(gui_active_cameras) and gui_active_cameras[cam-1] == 1]
-
-            if len(filtered_cam_list) > 0:
+            if filtered_cam_list:
                 print(f'{current_time()} Camera mix candidates: {filtered_cam_list}')
-                camera(rotate_camera(filtered_cam_list), switcher)
+                camera(random.choice(filtered_cam_list))
             else:
                 print(f'{current_time()} AutoSwitch is not changing any cameras at the moment (no sound above threshold or no active cameras chosen for tracks).')
-        time.sleep(sleep_time)
+        time.sleep(config.DECISION_INTERVAL)
 
 # --- GUI Components and Logic ---
 class CustomDualSlider:
@@ -461,97 +336,56 @@ class CustomDualSlider:
     def bind_sub(self, command):
         self.command_sub = command
 
-def create_slider_with_subslider(frame, main_slider_file, sub_slider_file):
-    slider = CustomDualSlider(frame)
-    slider.bind_sub(lambda: update_slider_file(slider, sub_slider_file, is_sub=True))
-    return slider, slider
 
-def update_slider_file(slider_instance, filename, is_sub=False):
-    global current_threshold_levels
-    value = slider_instance.subget()
-    match = re.search(r'Track_(\d+)', filename)
-    if match:
-        track_idx = int(match.group(1))
-        with data_lock:
-            current_threshold_levels[track_idx] = value
-    update_input_file(filename, value)
-
-def update_highlight(buttons, filename, active_cameras):
-    input_value = read_input_from_file(filename)
-    if input_value is not None:
-        highlight_button(buttons, int(input_value) - 1, active_cameras)
+def update_highlight(buttons):
+    """Light up the button of the camera that is currently on air."""
+    current_camera, _ = state.get_switch_status()
+    if current_camera is not None:
+        highlight_button(buttons, current_camera - 1)
     if root:
-        root.after(250, update_highlight, buttons, filename, active_cameras)
+        root.after(250, update_highlight, buttons)
 
-def update_sliders_from_files(sliders_list, filenames, is_sub=False):
-    for slider, filename in zip(sliders_list, filenames):
-        value = read_value_from_file(filename)
-        if is_sub:
-            slider.set_sub(value)
-    if root:
-        root.after(250, update_sliders_from_files, sliders_list, filenames, is_sub)
-
-def toggle_automated(filename):
+def toggle_automated():
     global start_stop_btn, start_icon, pause_icon
-    try:
-        with open(filename, 'r') as file:
-            value = int(file.read().strip())
-    except FileNotFoundError:
-        with open(filename, 'w') as file:
-            file.write('0')
-        value = 0
-        print(f"{current_time()} Created automated.txt with initial value 0")
-
-    new_value = 0 if value == 1 else 1
-    with open(filename, 'w') as file:
-        file.write(str(new_value))
-    print(f"{current_time()} Automated toggle: {value} -> {new_value}")
+    new_value = not state.is_automated()
+    state.set_automated(new_value)
+    print(f"{current_time()} Automated switching: {'on' if new_value else 'off'}")
 
     if start_stop_btn:
-        if new_value == 1:
-            start_stop_btn.config(image=pause_icon, text="")
-        else:
-            start_stop_btn.config(image=start_icon, text="")
+        start_stop_btn.config(image=pause_icon if new_value else start_icon, text="")
 
-def toggle_camera(idx, buttons, active_cameras):
-    active_cameras[idx] = 0 if active_cameras[idx] == 1 else 1
-    save_active_cameras(active_cameras)
-    update_camera_button_style(idx, buttons, active_cameras)
+def toggle_camera(idx, buttons):
+    state.toggle_camera_active(idx)
+    update_camera_button_style(idx, buttons)
 
-def update_camera_button_style(idx, buttons, active_cameras):
-    if active_cameras[idx] == 1:
+def update_camera_button_style(idx, buttons):
+    if state.is_camera_active(idx + 1):
         buttons[idx].configure(state=tk.NORMAL, style='Camera.TButton')
-        buttons[idx].config(command=lambda idx=idx: camera(idx + 1, switcher))
+        buttons[idx].config(command=lambda idx=idx: camera(idx + 1))
     else:
         buttons[idx].configure(state=tk.DISABLED, style='Disabled.TButton')
         buttons[idx].config(command=None)
 
-def checkbox_clicked(slider_idx, box_idx):
-    global check_vars, checkbox_states, current_checkbox_states
-    checkbox_states[slider_idx][box_idx] = check_vars[slider_idx][box_idx].get()
-    state_str = ''.join(str(state) for state in checkbox_states[slider_idx])
-    with data_lock:
-        current_checkbox_states[slider_idx] = checkbox_states[slider_idx][:]
-    with open(f"slider_{slider_idx}_box.txt", 'w') as file:
-        file.write(state_str)
+def checkbox_clicked(track_idx, box_idx, check_var):
+    state.set_track_camera(track_idx, box_idx, check_var.get())
 
-def highlight_button(buttons, selected_index, active_cameras):
+def highlight_button(buttons, selected_index):
     for idx, btn in enumerate(buttons):
-        if active_cameras[idx] == 1:
+        if state.is_camera_active(idx + 1):
             btn.configure(style='Camera.TButton')
-    if 0 <= selected_index < len(buttons) and active_cameras[selected_index] == 1:
+    if 0 <= selected_index < len(buttons) and state.is_camera_active(selected_index + 1):
         buttons[selected_index].configure(style='Red.TButton')
 
 # --- Main GUI Function ---
 def gui():
-    global number_of_tracks, root, start_stop_btn, start_icon, pause_icon, check_vars, checkbox_states, sliders, secondary_sliders
+    global root, start_stop_btn, start_icon, pause_icon, sliders
 
     root = ThemedTk(theme="arc")
     root.title("Aperture Control")
     root.attributes('-topmost', True)
     root.configure(bg="#1a1a1a")
 
-    # --- Styling Configuration (Corrected) ---
+    # --- Styling Configuration ---
     style = ttk.Style()
     style.theme_use("arc")
 
@@ -572,21 +406,18 @@ def gui():
                     bordercolor="#555555",
                     borderwidth=1)
     style.map('TButton',
-              # Define colors for pressed, then active, then the default state.
               background=[('pressed', '#333333'), ('active', '#555555'), ('!disabled', '#444444')],
-              foreground=[('!disabled', 'green')]) # White text for all non-disabled states.
+              foreground=[('!disabled', 'green')])
 
     # Camera buttons (Normal/Active)
     style.configure('Camera.TButton', font=button_font, foreground="black")
     style.map('Camera.TButton',
-              # Explicitly set the blue background for the normal (!disabled) state.
               background=[('pressed', '#005bb5'), ('active', '#34aadc'), ('!disabled', '#007aff')],
               foreground=[('!disabled', 'green')])
 
     # Highlighted (Selected) camera button
     style.configure('Red.TButton', font=button_font, foreground="red")
     style.map('Red.TButton',
-              # Explicitly set the red background for the normal (!disabled) state.
               background=[('pressed', '#cc382e'), ('active', 'red'), ('!disabled', '#ff453a')],
               foreground=[('!disabled', 'red')])
 
@@ -614,7 +445,6 @@ def gui():
 
     # --- GUI Layout ---
     cam_labels = ["Cam 1", "Cam 2", "Cam 3", "Cam 4"]
-    active_cameras = load_active_cameras()
 
     # Frame for Camera Control Buttons
     camera_control_frame = ttk.Frame(root, padding="15 10", style='TFrame')
@@ -622,10 +452,10 @@ def gui():
 
     buttons = []
     for i, label_text in enumerate(cam_labels):
-        btn = ttk.Button(camera_control_frame, text=label_text, command=lambda idx=i: toggle_camera(idx, buttons, active_cameras))
+        btn = ttk.Button(camera_control_frame, text=label_text, command=lambda idx=i: toggle_camera(idx, buttons))
         btn.grid(row=0, column=i, padx=5, pady=5, sticky='ew')
         buttons.append(btn)
-        update_camera_button_style(i, buttons, active_cameras)
+        update_camera_button_style(i, buttons)
 
     for i in range(len(cam_labels)):
         camera_control_frame.grid_columnconfigure(i, weight=1)
@@ -639,103 +469,62 @@ def gui():
     pause_icon = resize_image("stop_icon.png", 24, 24)
 
     start_stop_btn = ttk.Button(auto_control_frame, image=pause_icon, text="", compound=tk.LEFT,
-                                command=lambda: toggle_automated('automated.txt'), style='TButton')
+                                command=toggle_automated, style='TButton')
     start_stop_btn.pack(pady=10, expand=True)
 
-    if read_input_from_file('automated.txt') == 1:
-        start_stop_btn.config(image=pause_icon, text="")
-    else:
-        start_stop_btn.config(image=start_icon, text="")
+    start_stop_btn.config(image=pause_icon if state.is_automated() else start_icon, text="")
 
     # Frame for Sliders and Checkboxes
     sliders_checkboxes_frame = ttk.Frame(root, padding="15 10", style='TFrame')
     sliders_checkboxes_frame.pack(fill=tk.BOTH, expand=True, pady=5)
 
     sliders.clear()
-    secondary_sliders.clear()
-    check_vars.clear()
-    checkbox_states.clear()
 
-    slider_files = []
-    secondary_slider_files = []
-    slider_names = []
-    slider_box_files = []
+    with state.lock:
+        num_tracks = state.num_tracks
 
-    for k in range(number_of_tracks):
-        slider_files.append(f"Track_{k}_status.txt")
-        secondary_slider_files.append(f"Secondary_Track_{k}_status.txt")
-        slider_names.append(f"Track {k}")
-        slider_box_files.append(f"slider_{k}_box.txt")
-
-    for k in range(number_of_tracks):
-        sound_file = f"Track_{k}_status.txt"
-        if not os.path.exists(sound_file):
-            with open(sound_file, 'w') as file:
-                file.write('0.0')
-        with data_lock:
-            current_sound_levels[k] = read_value_from_file(sound_file)
-
-        threshold_file = f"Secondary_Track_{k}_status.txt"
-        if not os.path.exists(threshold_file):
-            with open(threshold_file, 'w') as file:
-                file.write('0.5')
-        with data_lock:
-            current_threshold_levels[k] = read_value_from_file(threshold_file)
-
-        box_file = f"slider_{k}_box.txt"
-        if not os.path.exists(box_file):
-            with open(box_file, 'w') as file:
-                file.write('0000')
-        with data_lock:
-            current_checkbox_states[k] = read_checkbox_states(k)
-
-    checkbox_states = [current_checkbox_states.get(i, [0,0,0,0]) for i in range(number_of_tracks)]
-    check_vars = [[None] * 4 for _ in range(number_of_tracks)]
-
-
-    for i, (slider_file, secondary_slider_file, slider_name) in enumerate(zip(slider_files, secondary_slider_files, slider_names)):
+    for i in range(num_tracks):
         track_row_frame = ttk.Frame(sliders_checkboxes_frame, padding="0 5", style='TFrame')
         track_row_frame.pack(fill=tk.X, expand=True, pady=5)
 
-        name_label = ttk.Label(track_row_frame, text=slider_name, style='TLabel')
+        name_label = ttk.Label(track_row_frame, text=f"Track {i}", style='TLabel')
         name_label.grid(row=0, column=0, padx=(0,10), sticky='w')
 
-        slider_widget, sub_slider_widget = create_slider_with_subslider(track_row_frame, slider_file, secondary_slider_file)
-        sliders.append(slider_widget)
-        secondary_sliders.append(sub_slider_widget)
-        slider_widget.canvas.grid(row=0, column=1, columnspan=4, sticky='ew')
+        slider = CustomDualSlider(track_row_frame)
+        # When the user releases the threshold thumb, store the new value.
+        slider.bind_sub(lambda i=i, s=slider: (state.set_threshold(i, s.subget()),
+                                               state.save()))
+        sliders.append(slider)
+        slider.canvas.grid(row=0, column=1, columnspan=4, sticky='ew')
         track_row_frame.grid_columnconfigure(1, weight=1)
 
-        slider_widget.set_main(current_sound_levels.get(i, 0.0))
-        sub_slider_widget.set_sub(current_threshold_levels.get(i, 0.5))
+        with state.lock:
+            level = state.levels.get(i, 0.0)
+        slider.set_main(level)
+        slider.set_sub(state.get_threshold(i))
 
-        for j in range(4):
-            check_var = tk.IntVar(value=current_checkbox_states.get(i, [0,0,0,0])[j])
+        for j in range(config.NUM_CAMERAS):
+            check_var = tk.IntVar(value=state.get_track_cameras(i)[j])
             chkbox = ttk.Checkbutton(track_row_frame, variable=check_var, text=str(j+1),
-                                     command=lambda slider_idx=i, box_idx=j: checkbox_clicked(slider_idx, box_idx),
+                                     command=lambda i=i, j=j, v=check_var: checkbox_clicked(i, j, v),
                                      style='TCheckbutton')
             chkbox.grid(row=1, column=j+1, padx=2, pady=2, sticky='w')
-            check_vars[i][j] = check_var
 
-
-    update_highlight(buttons, 'input.txt', active_cameras)
-    root.after(250, lambda: update_sliders_from_files(secondary_sliders, secondary_slider_files, is_sub=True))
+    update_highlight(buttons)
 
     root.mainloop()
 
 def main():
-    global server, client, root, number_of_tracks
-    update_input_file('automated.txt', 1)
+    global server, client
+
+    state.load()
 
     connection_to_switcher()
 
-    osc_client_port = config.OSC_SEND_PORT
-    osc_server_base_port = config.OSC_LISTEN_PORT
-
-    client = udp_client.SimpleUDPClient(config.OSC_HOST, osc_client_port)
+    client = udp_client.SimpleUDPClient(config.OSC_HOST, config.OSC_SEND_PORT)
 
     disp = dispatcher.Dispatcher()
-    current_server_port = osc_server_base_port
+    current_server_port = config.OSC_LISTEN_PORT
     max_attempts = 5
     for attempt in range(max_attempts):
         if not is_port_in_use(current_server_port):
@@ -748,7 +537,7 @@ def main():
         print(current_time() + CRED_RED + f" Failed to free port {current_server_port}. Trying next port..." + CEND)
         current_server_port += 1
         if attempt == max_attempts - 1:
-            print(current_time() + CRED_RED + f" All port attempts failed (tried {osc_server_base_port} to {current_server_port}). Exiting." + CEND)
+            print(current_time() + CRED_RED + f" All port attempts failed. Exiting." + CEND)
             cleanup()
             return
 
@@ -776,12 +565,6 @@ def main():
     print(f"{current_time()} Requesting initial number of tracks from Ableton...")
     client.send_message("/live/song/get/num_tracks", 0)
     time.sleep(1)
-
-    with data_lock:
-        for k in range(number_of_tracks):
-            current_sound_levels[k] = read_value_from_file(f"Track_{k}_status.txt")
-            current_threshold_levels[k] = read_value_from_file(f"Secondary_Track_{k}_status.txt")
-            current_checkbox_states[k] = read_checkbox_states(k)
 
     gui()
 
