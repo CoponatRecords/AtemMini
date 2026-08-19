@@ -1,0 +1,19 @@
+# Runtime state — created while the app runs, different on every machine.
+# Generated files never belong in git: they make every diff noisy and
+# tell you nothing about the code.
+settings.json
+*_status.txt
+slider_*_box.txt
+input.txt
+last_cam.txt
+active_camera.txt
+automated.txt
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# PyInstaller build output
+build/
+dist/
